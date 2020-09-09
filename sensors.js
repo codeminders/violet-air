@@ -1,14 +1,26 @@
 const fetch = require('node-fetch');
 
-const MAX = 5000; // metres
+const MAX_DISTANCE = 5000; // max distance from the user's location (metres)
+const NUM_SENSORS = 1; //  max number of sensors to consider
+const LIST_REFRESH_RATE = 12*60*60; // Reload list of sensors if it is older than this value (seconds) (12 hours)
+const SENSOR_REFRESH_RATE = 5*60; //  Sensors fetch rate limit - do not request more than once in this timeframe (seconds)
+const PM_25_HIGH_LIMIT = 500; // To filter out abnormal sensor reading (due to hardware fault or dirt in the sensor)
+
+//TODO: refresh cache
+//TODO: individual sensor access rate limit
+//TODO: weighted average (based on distance)
+//TODO: filter out abnormal reading of PM2.5
 
 let cache = [];
+let last_update_ts = 0;
 
 const load = async() => {
     try {
         const response = await fetch('https://www.purpleair.com/data.json');
         const json = await response.json();
-        cache = json.data.map(row => {
+        cache = json.data.
+        filter(row => row[23] == 0).
+        map(row => {
             return {
                 id: row[0],
                 label: row[24],
@@ -16,6 +28,7 @@ const load = async() => {
                 lon: row[26]
             };
         });
+        last_update_ts = Date.now();
     } catch (error) {
         console.error(error);
     }
@@ -37,16 +50,18 @@ const haversine = (lat1, lon1, lat2, lon2) => {
 }
 
 const closests = async(lat, lon) => {
+    // TODO: refresh cache here
     if (!cache.length) {
         await load();
     }
+    //TODO: exclude sensors with Parent ID ???
     return cache.map(v => {
         return {...v, distance: haversine(v.lat, v.lon, lat, lon) }
     }).filter(v => {
-        return v.distance <= MAX;
+        return v.distance <= MAX_DISTANCE;
     }).sort((a, b) => {
         return a.distance - b.distance;
-    }).slice(0, 5);
+    }).slice(0, NUM_SENSORS);
 }
 
 // LRAPA correction https://www.lrapa.org/DocumentCenter/View/4147/PurpleAir-Correction-Summary
@@ -84,6 +99,8 @@ module.exports.value = async(lat, lon) => {
     console.log('using sensors', sensors);
     for (const sensor of sensors) {
         console.log('loading sensor data from', sensor);
+        //TODO: individual sensor rate limit 
+        //TODO: Should we introduce a global rate limit as well to avoid blacklisting
         try {
             const response = await fetch('https://www.purpleair.com/json?show=' + sensor.id);
             const json = await response.json();
