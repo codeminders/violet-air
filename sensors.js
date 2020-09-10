@@ -19,15 +19,15 @@ const load = async() => {
         const response = await fetch('https://www.purpleair.com/data.json');
         const json = await response.json();
         cache = json.data.
-        filter(row => row[23] == 0).
-        map(row => {
-            return {
-                id: row[0],
-                label: row[24],
-                lat: row[25],
-                lon: row[26]
-            };
-        });
+          filter(row => row[23] == 0).
+          map(row => {
+              return {
+                  id: row[0],
+                  label: row[24],
+                  lat: row[25],
+                  lon: row[26]
+              };
+          });
         last_update_ts = Date.now();
     } catch (error) {
         console.error(error);
@@ -92,30 +92,56 @@ const AQI = (pm25) => {
     return 501; //  "Beyond the AQI"
 }
 
+const channel_pm25 = (data) => {
+    if(data.PM2_5Value > PM_25_HIGH_LIMIT) {
+        console.log('Skipping channel %s due to abnormal PM2.5 reading: %d', data.Label, data.PM2_5Value);
+        return -1;
+    }
+    //TODO: we may also want to check if data.Stats.v or data.Stats.pm are different from data.PM2_5Value (it is not suppose to be)
+    const stats = JSON.parse(data.Stats);
+    console.log('Sensor stats: ', stats);
+
+    return stats.v1; // getting 10 minutes averages
+}
+
 module.exports.value = async(lat, lon) => {
     let t = 0;
     let n = 0;
     const sensors = await closests(lat, lon);
-    console.log('using sensors', sensors);
+    console.log('Using sensors', sensors);
     for (const sensor of sensors) {
-        console.log('loading sensor data from', sensor);
+        console.log('Loading sensor data from', sensor);
         //TODO: individual sensor rate limit 
         //TODO: Should we introduce a global rate limit as well to avoid blacklisting
         try {
             const response = await fetch('https://www.purpleair.com/json?show=' + sensor.id);
             const json = await response.json();
-            console.log('got', json);
-            const stats = json.results[0].Stats;
-            console.log('got stats', stats);
-            const raw = JSON.parse(stats).v1;
-            console.log('got raw', raw);
+            console.log('Sensor Data: ', json);
+
+            let s = 0;
+            let n_valid_channels = 0;
+            for(const channel of json.results) {
+                const pm25 = channel_pm25(channel);
+                if(pm25 >= 0) {
+                    s += pm25;
+                    n_valid_channels += 1;
+                }
+            }
+            if(n_valid_channels == 0) {
+                console.log('No valid channels. skipping sensor "%s" ', sensor.label);
+                continue;
+            }
+
+            const sensor_raw_pm25 = s / n_valid_channels; // average pm25 between valid channels 
+            console.log('Raw PM25 ', sensor_raw_pm25);
+            console.log('Raw AQI ', AQI(sensor_raw_pm25));
             // sanity check, some sensors return 0.0 (instant)
             // this is hacky, need to do proper statistical
             // filtering of outliers based on distribution
             // TODO: use 'AGE' field to filter stale data
-            if (raw > 5.0) {
-                const v = LRAPA(raw);
-                console.log('got LRAPA', v);
+            if (sensor_raw_pm25 > 5.0) {
+                const v = LRAPA(sensor_raw_pm25);
+                console.log('PM2.5 After LRAPA correction ', v);
                 t = t + v;
                 n = n + 1;
             }
