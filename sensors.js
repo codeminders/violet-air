@@ -1,15 +1,12 @@
 const fetch = require('node-fetch');
 
 const MAX_DISTANCE = 5000; // max distance from the user's location (metres)
-const NUM_SENSORS = 1; //  max number of sensors to consider
-const LIST_REFRESH_RATE = 12*60*60; // Reload list of sensors if it is older than this value (seconds) (12 hours)
+const NUM_SENSORS = 10; //  max number of sensors to consider
+const LIST_REFRESH_RATE = 12*60*60*1000; // Reload list of sensors if it is older than this value (milliseconds) (12 hours)
 const SENSOR_REFRESH_RATE = 5*60; //  Sensors fetch rate limit - do not request more than once in this timeframe (seconds)
 const PM_25_HIGH_LIMIT = 500; // To filter out abnormal sensor reading (due to hardware fault or dirt in the sensor)
 
-//TODO: refresh cache
 //TODO: individual sensor access rate limit
-//TODO: weighted average (based on distance)
-//TODO: filter out abnormal reading of PM2.5
 
 let cache = [];
 let last_update_ts = 0;
@@ -19,7 +16,7 @@ const load = async() => {
         const response = await fetch('https://www.purpleair.com/data.json');
         const json = await response.json();
         cache = json.data.
-          filter(row => row[23] == 0).
+          filter(row => row[23] == 0). //only outdoor sensors
           map(row => {
               return {
                   id: row[0],
@@ -51,10 +48,9 @@ const haversine = (lat1, lon1, lat2, lon2) => {
 
 const closests = async(lat, lon) => {
     // TODO: refresh cache here
-    if (!cache.length) {
+    if (cache.length == 0 || Date.now() - last_update_ts > LIST_REFRESH_RATE) {
         await load();
     }
-    //TODO: exclude sensors with Parent ID ???
     return cache.map(v => {
         return {...v, distance: haversine(v.lat, v.lon, lat, lon) }
     }).filter(v => {
@@ -84,7 +80,7 @@ const AQI = (pm25) => {
     const Cp = Math.round(pm25 * 10) / 10;
     for (const breakpoint of breakpoints) {
         const [Blo, Bhi, Ilo, Ihi] = breakpoint;
-        console.log('?', Blo, Bhi, Ilo, Ihi, Cp);
+        // console.log('?', Blo, Bhi, Ilo, Ihi, Cp);
         if (Cp >= Blo && Cp <= Bhi) {
             return ((Ihi - Ilo) / ((Bhi - Blo) * 1.0)) * (Cp - Blo) + Ilo;
         }
@@ -93,7 +89,10 @@ const AQI = (pm25) => {
 }
 
 const channel_pm25 = (data) => {
-    if(data.PM2_5Value > PM_25_HIGH_LIMIT) {
+    // sanity check, some sensors return 0.0 (instant)
+    // this is hacky, need to do proper statistical
+    // filtering of outliers based on distribution
+    if(data.PM2_5Value > PM_25_HIGH_LIMIT || data.PM2_5Value < 5.0) {
         console.log('Skipping channel %s due to abnormal PM2.5 reading: %d', data.Label, data.PM2_5Value);
         return -1;
     }
@@ -107,6 +106,7 @@ const channel_pm25 = (data) => {
 module.exports.value = async(lat, lon) => {
     let t = 0;
     let n = 0;
+    let dt = 0;
     const sensors = await closests(lat, lon);
     console.log('Using sensors', sensors);
     for (const sensor of sensors) {
@@ -135,14 +135,13 @@ module.exports.value = async(lat, lon) => {
             const sensor_raw_pm25 = s / n_valid_channels; // average pm25 between valid channels 
             console.log('Raw PM25 ', sensor_raw_pm25);
             console.log('Raw AQI ', AQI(sensor_raw_pm25));
-            // sanity check, some sensors return 0.0 (instant)
-            // this is hacky, need to do proper statistical
-            // filtering of outliers based on distribution
             // TODO: use 'AGE' field to filter stale data
-            if (sensor_raw_pm25 > 5.0) {
+            if (sensor_raw_pm25 > 0) {
                 const v = LRAPA(sensor_raw_pm25);
-                console.log('PM2.5 After LRAPA correction ', v);
-                t = t + v;
+                console.log('PM2.5 after LRAPA correction ', v);
+                const d = MAX_DISTANCE - sensor.distance;
+                dt += d;
+                t = t + v*d;
                 n = n + 1;
             }
         } catch (e) {
@@ -150,7 +149,9 @@ module.exports.value = async(lat, lon) => {
         }
 
     }
-    return Math.round(AQI(t / (Math.max(n, 1) * 1.0)));
+    console.log('# sensors %d sum %d avg %d', n, t, t / (Math.max(n, 1) * 1.0));
+    // return Math.round(AQI(t / (Math.max(n, 1) * 1.0)));
+    return Math.round(AQI(t / (Math.max(dt, 1) * 1.0)));
 }
 
 (async() => {
