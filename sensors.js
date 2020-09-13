@@ -141,7 +141,7 @@ module.exports.value = async(lat, lon) => {
                 const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
                 const v = LRAPA(raw_pm25);
 
-                console.log('Sensor "%s" PM2.5: %d AQI (raw) %d PM2.5 (LRAPA) AQI (LRAPA) %d', sensor.label, raw_pm25, v, AQI(v));
+                console.log('Sensor "%s" PM2.5: %d AQI (raw) %d PM2.5 (LRAPA) AQI (LRAPA) %d', sensor_json.Label, raw_pm25, v, AQI(v));
                 // console.log('Raw AQI', AQI(raw_pm25));
                 // console.log('PM2.5 after LRAPA correction', v);
 
