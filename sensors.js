@@ -1,13 +1,20 @@
 const fetch = require('node-fetch');
 
 const MAX_DISTANCE = 5000; // max distance from the user's location (metres)
-const NUM_SENSORS = 10; //  max number of sensors to consider
+const NUM_SENSORS = 5; //  max number of sensors to consider
 const LIST_REFRESH_RATE = 12*60*60*1000; // Reload list of sensors if it is older than this value (milliseconds) (12 hours)
 const SENSOR_REFRESH_RATE = 5*60; //  Sensors fetch rate limit - do not request more than once in this timeframe (seconds)
 const PM_25_HIGH_LIMIT = 500; // To filter out abnormal sensor reading (due to hardware fault or dirt in the sensor)
 
-//TODO: individual sensor access rate limit
+//TODO: batch request for sensors
 
+//TODO: handle "Rate limit exceeded" error
+//TODO:  { code: 429, message: 'Rate limit exceeded. Try again in 43 milli seconds.' }
+
+//TODO: error while loading the sensor list:
+//TODO:   message:
+//   'invalid json response body at https://www.purpleair.com/data.json reason: Unexpected token [ in JSON at position 287',
+  
 let cache = [];
 let last_update_ts = 0;
 
@@ -88,7 +95,7 @@ const AQI = (pm25) => {
     return 501; //  "Beyond the AQI"
 }
 
-const channel_pm25 = (data) => {
+const sensor_pm25 = (data) => {
     // sanity check, some sensors return 0.0 (instant)
     // this is hacky, need to do proper statistical
     // filtering of outliers based on distribution
@@ -98,7 +105,7 @@ const channel_pm25 = (data) => {
     }
     //TODO: we may also want to check if data.Stats.v or data.Stats.pm are different from data.PM2_5Value (it is not suppose to be)
     const stats = JSON.parse(data.Stats);
-    console.log('Sensor stats: ', stats);
+    // console.log('Sensor stats: ', stats);
 
     return stats.v1; // getting 10 minutes averages
 }
@@ -108,50 +115,51 @@ module.exports.value = async(lat, lon) => {
     let n = 0;
     let dt = 0;
     const sensors = await closests(lat, lon);
-    console.log('Using sensors', sensors);
-    for (const sensor of sensors) {
-        console.log('Loading sensor data from', sensor);
-        //TODO: individual sensor rate limit 
-        //TODO: Should we introduce a global rate limit as well to avoid blacklisting
-        try {
-            const response = await fetch('https://www.purpleair.com/json?show=' + sensor.id);
-            const json = await response.json();
-            console.log('Sensor Data: ', json);
+    console.log('Closest sensors', sensors);
 
-            let s = 0;
-            let n_valid_channels = 0;
-            for(const channel of json.results) {
-                const pm25 = channel_pm25(channel);
-                if(pm25 >= 0) {
-                    s += pm25;
-                    n_valid_channels += 1;
-                }
-            }
-            if(n_valid_channels == 0) {
-                console.log('No valid channels. skipping sensor "%s" ', sensor.label);
-                continue;
-            }
+    //TODO: I'm sure it could be done in a more elegant way
+    const dict = sensors.reduce((result, s) => {
+        result[s.id] = s;
+        return result;
+    }, {});
+    // console.log("Sensor dictionary", dict);
 
-            const sensor_raw_pm25 = s / n_valid_channels; // average pm25 between valid channels 
-            console.log('Raw PM25 ', sensor_raw_pm25);
-            console.log('Raw AQI ', AQI(sensor_raw_pm25));
-            // TODO: use 'AGE' field to filter stale data
-            if (sensor_raw_pm25 > 0) {
-                const v = LRAPA(sensor_raw_pm25);
-                console.log('PM2.5 after LRAPA correction ', v);
-                const d = MAX_DISTANCE - sensor.distance;
+    let query = '';
+    for(const sensor of sensors) 
+        query += (query.length > 0 ? '|' : '') + sensor.id;
+    console.log('Query string:', query)
+    try {
+        const response = await fetch('https://www.purpleair.com/json?show=' + query);
+        const json = await response.json();
+        console.log('Sensors JSON data', json);
+        //TODO: check if JSON is there. I saw the errors related to this (I think)
+
+        let n = 0;
+        for(const sensor_json of json.results) {
+            const raw_pm25 = sensor_pm25(sensor_json);
+            if (raw_pm25 >= 0) {
+                const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
+                const v = LRAPA(raw_pm25);
+
+                console.log('Sensor "%s" PM2.5: %d AQI (raw) %d PM2.5 (LRAPA) AQI (LRAPA) %d', sensor.label, raw_pm25, v, AQI(v));
+                // console.log('Raw AQI', AQI(raw_pm25));
+                // console.log('PM2.5 after LRAPA correction', v);
+
+                // Look up original sensor from the sensor list
+                const d = MAX_DISTANCE - sensor.distance; 
+
                 dt += d;
-                t = t + v*d;
-                n = n + 1;
+                t += v*d;
+                n += 1;
             }
-        } catch (e) {
-            console.error('failed to load sensor data from', sensor, e);
         }
 
+        return Math.round(AQI(t / (Math.max(dt, 1) * 1.0)));
+
+    } catch(e) {
+        console.error('Failed to load sensors data', e);
+        return -1;
     }
-    console.log('# sensors %d sum %d avg %d', n, t, t / (Math.max(n, 1) * 1.0));
-    // return Math.round(AQI(t / (Math.max(n, 1) * 1.0)));
-    return Math.round(AQI(t / (Math.max(dt, 1) * 1.0)));
 }
 
 (async() => {
