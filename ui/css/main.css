@@ -1,0 +1,17 @@
+body {
+    background-color: red;
+    color: white;
+}
+
+.container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+}
+
+#value {
+    font-size: 100px;
+}

@@ -5,6 +5,7 @@ module.exports = async(req) => {
     dialogflow.intent('Got Location', async(conv, params, granted) => {
         if (granted) {
             console.log(conv.device.location);
+            conv.user.storage.coords = conv.device.location;
             return await stats.get(conv);
         } else {
             conv.close('Well, goodbye then');

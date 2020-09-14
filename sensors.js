@@ -2,8 +2,8 @@ const fetch = require('node-fetch');
 
 const MAX_DISTANCE = 5000; // max distance from the user's location (metres)
 const NUM_SENSORS = 5; //  max number of sensors to consider
-const LIST_REFRESH_RATE = 12*60*60*1000; // Reload list of sensors if it is older than this value (milliseconds) (12 hours)
-const SENSOR_REFRESH_RATE = 5*60; //  Sensors fetch rate limit - do not request more than once in this timeframe (seconds)
+const LIST_REFRESH_RATE = 12 * 60 * 60 * 1000; // Reload list of sensors if it is older than this value (milliseconds) (12 hours)
+const SENSOR_REFRESH_RATE = 5 * 60; //  Sensors fetch rate limit - do not request more than once in this timeframe (seconds)
 const PM_25_HIGH_LIMIT = 500; // To filter out abnormal sensor reading (due to hardware fault or dirt in the sensor)
 
 //TODO: batch request for sensors
@@ -14,27 +14,35 @@ const PM_25_HIGH_LIMIT = 500; // To filter out abnormal sensor reading (due to h
 //TODO: error while loading the sensor list:
 //TODO:   message:
 //   'invalid json response body at https://www.purpleair.com/data.json reason: Unexpected token [ in JSON at position 287',
-  
+
 let cache = [];
 let last_update_ts = 0;
 
 const load = async() => {
+    console.log('refreshing list of sensors');
     try {
         const response = await fetch('https://www.purpleair.com/data.json');
-        const json = await response.json();
+        const body = await response.text();
+        let json;
+        try {
+            json = JSON.parse(body);
+        } catch (e) {
+            console.error('Failed to obtain JSON response from purpleair', response.status, body);
+            return;
+        }
         cache = json.data.
-          filter(row => row[23] == 0). //only outdoor sensors
-          map(row => {
-              return {
-                  id: row[0],
-                  label: row[24],
-                  lat: row[25],
-                  lon: row[26]
-              };
-          });
+        filter(row => row[23] == 0). //only outdoor sensors
+        map(row => {
+            return {
+                id: row[0],
+                label: row[24],
+                lat: row[25],
+                lon: row[26]
+            };
+        });
         last_update_ts = Date.now();
     } catch (error) {
-        console.error(error);
+        console.error('Failed to parse response from purpleair', error);
     }
 };
 
@@ -99,7 +107,7 @@ const sensor_pm25 = (data) => {
     // sanity check, some sensors return 0.0 (instant)
     // this is hacky, need to do proper statistical
     // filtering of outliers based on distribution
-    if(data.PM2_5Value > PM_25_HIGH_LIMIT || data.PM2_5Value < 5.0) {
+    if (data.PM2_5Value > PM_25_HIGH_LIMIT || data.PM2_5Value < 5.0) {
         console.log('Skipping channel %s due to abnormal PM2.5 reading: %d', data.Label, data.PM2_5Value);
         return -1;
     }
@@ -115,7 +123,11 @@ module.exports.value = async(lat, lon) => {
     let n = 0;
     let dt = 0;
     const sensors = await closests(lat, lon);
-    console.log('Closest sensors', sensors);
+    if (!sensors.length) {
+        console.log('No close sensors found for', lat, lon);
+        return -2;
+    }
+    console.log('Closest sensors', lat, lon, sensors);
 
     //TODO: I'm sure it could be done in a more elegant way
     const dict = sensors.reduce((result, s) => {
@@ -124,45 +136,53 @@ module.exports.value = async(lat, lon) => {
     }, {});
     // console.log("Sensor dictionary", dict);
 
-    let query = '';
-    for(const sensor of sensors) 
-        query += (query.length > 0 ? '|' : '') + sensor.id;
-    console.log('Query string:', query)
+    const query = sensors.map(v => v.id).join('|');
+    console.log('Query string:', query);
+
     try {
-        const response = await fetch('https://www.purpleair.com/json?show=' + query);
-        const json = await response.json();
-        console.log('Sensors JSON data', json);
-        //TODO: check if JSON is there. I saw the errors related to this (I think)
+        let json;
+        try {
+            const response = await fetch('https://www.purpleair.com/json?show=' + query);
+            const body = await response.text();
+            try {
+                json = JSON.parse(body);
+                console.log('Weather JSON data', json);
+            } catch (e) {
+                console.error('Failed to obtain JSON response from purpleair', response.status, body);
+            }
+        } catch (e) {
+            console.error('Failed to obtain response from purple air', e);
+        }
 
         let n = 0;
-        for(const sensor_json of json.results) {
+        for (const sensor_json of json.results) {
             const raw_pm25 = sensor_pm25(sensor_json);
             if (raw_pm25 >= 0) {
                 const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
                 const v = LRAPA(raw_pm25);
 
-                console.log('Sensor "%s" PM2.5: %d AQI (raw): %d PM2.5 (LRAPA): %d AQI (LRAPA): %d', 
-                            sensor_json.Label, raw_pm25, AQI(raw_pm25), v, AQI(v));
+                console.log('Sensor "%s" PM2.5: %d AQI (raw): %d PM2.5 (LRAPA): %d AQI (LRAPA): %d',
+                    sensor_json.Label, raw_pm25, AQI(raw_pm25), v, AQI(v));
                 // console.log('Raw AQI', AQI(raw_pm25));
                 // console.log('PM2.5 after LRAPA correction', v);
 
                 // Look up original sensor from the sensor list
-                const d = MAX_DISTANCE - sensor.distance; 
+                const d = MAX_DISTANCE - sensor.distance;
 
                 dt += d;
-                t += v*d;
+                t += v * d;
                 n += 1;
             }
         }
 
         return Math.round(AQI(t / (Math.max(dt, 1) * 1.0)));
 
-    } catch(e) {
-        console.error('Failed to load sensors data', e);
+    } catch (e) {
+        console.error('Failed to load weather data', e);
         return -1;
     }
 }
 
-(async() => {
-    console.log(await module.exports.value(37.846336, -122.26603));
-})();
+// (async() => {
+//     console.log(await module.exports.value(37.846336, -122.26603));
+// })();
