@@ -76,7 +76,7 @@ const closests = async(lat, lon) => {
 }
 
 // LRAPA correction https://www.lrapa.org/DocumentCenter/View/4147/PurpleAir-Correction-Summary
-const LRAPA = (x) => 0.5 * x - 0.66;
+const LRAPA = (x) => Math.max(0.5 * x - 0.66, 0);
 
 // Calculate AQI for PM2.5.
 // https://www3.epa.gov/airnow/aqi-technical-assistance-document-sept2018.pdf
@@ -97,7 +97,7 @@ const AQI = (pm25) => {
         const [Blo, Bhi, Ilo, Ihi] = breakpoint;
         // console.log('?', Blo, Bhi, Ilo, Ihi, Cp);
         if (Cp >= Blo && Cp <= Bhi) {
-            return ((Ihi - Ilo) / ((Bhi - Blo) * 1.0)) * (Cp - Blo) + Ilo;
+            return Math.max(((Ihi - Ilo) / ((Bhi - Blo) * 1.0)) * (Cp - Blo) + Ilo, 0);
         }
     }
     return 501; //  "Beyond the AQI"
@@ -107,7 +107,7 @@ const sensor_pm25 = (data) => {
     // sanity check, some sensors return 0.0 (instant)
     // this is hacky, need to do proper statistical
     // filtering of outliers based on distribution
-    if (data.PM2_5Value > PM_25_HIGH_LIMIT || data.PM2_5Value < 5.0) {
+    if (data.PM2_5Value > PM_25_HIGH_LIMIT || data.PM2_5Value < 0.1) {
         console.log('Skipping channel %s due to abnormal PM2.5 reading: %d', data.Label, data.PM2_5Value);
         return -1;
     }
@@ -146,7 +146,7 @@ module.exports.value = async(lat, lon) => {
             const body = await response.text();
             try {
                 json = JSON.parse(body);
-                console.log('Weather JSON data', json);
+                // console.log('JSON data', json);
             } catch (e) {
                 console.error('Failed to obtain JSON response from purpleair', response.status, body);
             }
