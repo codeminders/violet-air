@@ -17,14 +17,14 @@ const buckets = [{
         max: 150,
         level: 'not-perfect',
         title: 'Not perfect',
-        voice: 'The air quality is meh. You can go outside if you want.'
+        voice: 'The air quality could be better. But you can go outside if you want.'
     },
     {
         min: 151,
         max: 200,
         level: 'not-good',
         title: 'Not good',
-        voice: 'The air quality is just bad. But you can go outside if you really have to.'
+        voice: 'The air quality is not good. But you can go outside if you really have to.'
     },
     {
         min: 201,

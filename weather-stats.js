@@ -3,14 +3,12 @@ const df = require('actions-on-google');
 const sensors = require('./sensors');
 const buckets = require('./aqi_buckets');
 
-//TODO: error utterance 
-
 const prefix = (v) => 'The AQI is ' + v + '. '
 
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
-    // const value = 308;
+    // const value = 121;
     const value = await sensors.value(coordinates.latitude, coordinates.longitude);
     if (value == -1) {
         // TODO we got no data

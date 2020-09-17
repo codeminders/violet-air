@@ -1,8 +1,8 @@
 body {
     color: white;
-    background-repeat: no-repeat;
+    background-repeat: repeat-y;
     background-size: cover;
-    background-position: center center;
+    background-position: center bottom;
     background-attachment: fixed;
 }
 
@@ -31,10 +31,12 @@ body.clean {
 
 body.acceptable {
     background-color: yellow;
+    background-image: url('../images/clean.jpg');
 }
 
 body.not-perfect {
     background-color: orange;
+    background-image: url('../images/not-perfect.jpg');
 }
 
 body.not-good {
