@@ -141,7 +141,7 @@ module.exports.value = async(lat, lon) => {
     // console.log("Sensor dictionary", dict);
 
     const query = sensors.map(v => v.id).join('|');
-    console.log('Query string:', query);
+    // console.log('Query string:', query);
 
     try {
         let json;
@@ -162,15 +162,14 @@ module.exports.value = async(lat, lon) => {
         for (const sensor_json of json.results) {
             const raw_pm25 = sensor_pm25(sensor_json);
             if (raw_pm25 >= 0) {
+                // Look up original sensor from the sensor list
                 const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
+                
                 const v = LRAPA(raw_pm25);
 
                 console.log('Sensor "%s" PM2.5: %d AQI (raw): %d PM2.5 (LRAPA): %d AQI (LRAPA): %d',
                     sensor_json.Label, raw_pm25, AQI(raw_pm25), v, AQI(v));
-                // console.log('Raw AQI', AQI(raw_pm25));
-                // console.log('PM2.5 after LRAPA correction', v);
 
-                // Look up original sensor from the sensor list
                 const d = MAX_DISTANCE - sensor.distance;
 
                 dt += d;
