@@ -10,7 +10,7 @@ const prefix = (v) => 'The AQI is ' + v + '. '
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
-    //const value = 158;
+    // const value = 308;
     const value = await sensors.value(coordinates.latitude, coordinates.longitude);
     if (value == -1) {
         // TODO we got no data
