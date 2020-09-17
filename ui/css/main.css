@@ -1,6 +1,9 @@
 body {
-    background-color: red;
     color: white;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    background-attachment: fixed;
 }
 
 .container {
@@ -18,4 +21,36 @@ body {
 
 #label {
     font-size: 20vmin;
+}
+
+body.clean {
+    background-color: green;
+}
+
+body.acceptable {
+    background-color: yellow;
+}
+
+body.not-perfect {
+    background-color: orange;
+}
+
+body.not-good {
+    background-color: red;
+    background-image: url('../images/not-good.jpg');
+}
+
+body.pretty-bad {
+    background-color: purple;
+    background-image: url('../images/pretty-bad.jpg');
+}
+
+body.terrible {
+    background-color: brown;
+    background-image: url('../images/terrible.jpg');
+}
+
+body.extremely-bad {
+    background-color: maroon;
+    background-image: url('../images/extremely-bad.jpg');
 }
