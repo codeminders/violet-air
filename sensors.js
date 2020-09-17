@@ -27,7 +27,8 @@ const load = async() => {
         try {
             json = JSON.parse(body);
         } catch (e) {
-            console.error('Failed to obtain JSON response from purpleair', response.status, body);
+            console.error('Failed to parse JSON response from purpleair', response.status, body.slice(0, 1000));
+            console.error('Parsing error', e)
             return;
         }
         cache = json.data.
