@@ -27,7 +27,7 @@ const load = async() => {
         } catch (e) {
             console.error('Failed to parse JSON response from purpleair', response.status, body.slice(0, 1000));
             console.error('Parsing error', e)
-            return;
+            return -1;
         }
         cache = json.data.
         filter(row => row[23] == 0). //only outdoor sensors
@@ -42,7 +42,10 @@ const load = async() => {
         last_update_ts = Date.now();
     } catch (error) {
         console.error('Failed to parse response from purpleair', error);
+        return -1;
     }
+
+    return 0;
 };
 
 const haversine = (lat1, lon1, lat2, lon2) => {
@@ -63,7 +66,9 @@ const haversine = (lat1, lon1, lat2, lon2) => {
 const closests = async(lat, lon) => {
     // TODO: refresh cache here
     if (cache.length == 0 || Date.now() - last_update_ts > LIST_REFRESH_RATE) {
-        await load();
+        const status = await load();
+        if(status < 0) 
+            return null;
     }
     return cache.map(v => {
         return {...v, distance: haversine(v.lat, v.lon, lat, lon) }
@@ -127,6 +132,9 @@ module.exports.value = async(lat, lon) => {
     let n = 0;
     let dt = 0;
     const sensors = await closests(lat, lon);
+    if(sensors == null) {
+        return -1;
+    }
     if (!sensors.length) {
         console.log('No close sensors found for', lat, lon);
         return -2;
@@ -153,9 +161,11 @@ module.exports.value = async(lat, lon) => {
                 // console.log('JSON data', json);
             } catch (e) {
                 console.error('Failed to obtain JSON response from purpleair', response.status, body);
+                return -1;
             }
         } catch (e) {
             console.error('Failed to obtain response from purple air', e);
+            return -1;
         }
 
         let n = 0;
@@ -164,7 +174,7 @@ module.exports.value = async(lat, lon) => {
             if (raw_pm25 >= 0) {
                 // Look up original sensor from the sensor list
                 const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
-                
+
                 const v = LRAPA(raw_pm25);
 
                 console.log('Sensor "%s" PM2.5: %d AQI (raw): %d PM2.5 (LRAPA): %d AQI (LRAPA): %d',
@@ -181,7 +191,7 @@ module.exports.value = async(lat, lon) => {
         return Math.round(AQI(t / (Math.max(dt, 1) * 1.0)));
 
     } catch (e) {
-        console.error('Failed to load weather data', e);
+        console.error('Failed to load PurpleAir data', e);
         return -1;
     }
 }
