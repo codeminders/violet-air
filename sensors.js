@@ -3,10 +3,8 @@ const fetch = require('node-fetch');
 const MAX_DISTANCE = 5000; // max distance from the user's location (metres)
 const NUM_SENSORS = 5; //  max number of sensors to consider
 const LIST_REFRESH_RATE = 12 * 60 * 60 * 1000; // Reload list of sensors if it is older than this value (milliseconds) (12 hours)
-const SENSOR_REFRESH_RATE = 5 * 60; //  Sensors fetch rate limit - do not request more than once in this timeframe (seconds)
 const PM_25_HIGH_LIMIT = 500; // To filter out abnormal sensor reading (due to hardware fault or dirt in the sensor)
-
-//TODO: batch request for sensors
+const MAX_AGE = 10; // filer out sensors not reporting data for X minutes
 
 //TODO: handle "Rate limit exceeded" error
 //TODO:  { code: 429, message: 'Rate limit exceeded. Try again in 43 milli seconds.' }
@@ -105,13 +103,18 @@ const AQI = (pm25) => {
 }
 
 const sensor_pm25 = (data) => {
+    if (data.AGE > MAX_AGE) {
+        console.log('Skipping channel "%s" for not reporting data for %d minutes', data.Label, data.AGE);
+        return -1;
+    }
     // sanity check, some sensors return 0.0 (instant)
     // this is hacky, need to do proper statistical
     // filtering of outliers based on distribution
     if (data.PM2_5Value > PM_25_HIGH_LIMIT || data.PM2_5Value < 0.1) {
-        console.log('Skipping channel %s due to abnormal PM2.5 reading: %d', data.Label, data.PM2_5Value);
+        console.log('Skipping channel "%s" due to abnormal PM2.5 reading: %d', data.Label, data.PM2_5Value);
         return -1;
     }
+
     //TODO: we may also want to check if data.Stats.v or data.Stats.pm are different from data.PM2_5Value (it is not suppose to be)
     const stats = JSON.parse(data.Stats);
     // console.log('Sensor stats: ', stats);

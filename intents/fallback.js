@@ -2,6 +2,6 @@ const dialogflow = require('../dialogflow');
 
 module.exports = async() => {
     dialogflow.intent('Default Fallback Intent', async(conv, params) => {
-        conv.ask('what?');
+        conv.ask('Sorry, what?');
     });
 }

@@ -9,7 +9,7 @@ module.exports = async() => {
             return conv.close('Ah, ha, ha, ha, stayin\' alive, stayin\' alive');
         }
         if (conv.user.verification !== 'VERIFIED') {
-            return await conv.close('Sorry, we can\'t obtain current location from guest users');
+            return await conv.close('Sorry, we can\'t obtain location for guest users');
         }
         if (conv.surface.capabilities.has('actions.capability.WEB_BROWSER') ||
             !conv.user.storage.coords) {
