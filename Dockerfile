@@ -1,6 +1,5 @@
 FROM node
 
-RUN npm install yarn -g
 RUN yarn global add forever
 WORKDIR /app
 COPY package.json ./
