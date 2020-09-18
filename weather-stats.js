@@ -29,6 +29,6 @@ module.exports.get = async(conv) => {
                 }
             }));
         }
-        conv.add('Hint: You can say "update location" if you moved');
+        // conv.add('Hint: You can say "update location" if you moved');
     }
 }
