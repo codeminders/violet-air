@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 
 const MAX_DISTANCE = 5000; // max distance from the user's location (metres)
-const NUM_SENSORS = 5; //  max number of sensors to consider
+const NUM_SENSORS = 10; //  max number of sensors to consider
 const LIST_REFRESH_RATE = 12 * 60 * 60 * 1000; // Reload list of sensors if it is older than this value (milliseconds) (12 hours)
 const PM_25_HIGH_LIMIT = 500; // To filter out abnormal sensor reading (due to hardware fault or dirt in the sensor)
 const MAX_AGE = 10; // filer out sensors not reporting data for X minutes
@@ -127,7 +127,7 @@ const sensor_pm25 = (data) => {
     return stats.v1; // getting 10 minutes averages
 }
 
-module.exports.value = async(lat, lon) => {
+module.exports.value = async(lat, lon, use_lrapa=true) => {
     let t = 0;
     let n = 0;
     let dt = 0;
@@ -139,17 +139,14 @@ module.exports.value = async(lat, lon) => {
         console.log('No close sensors found for', lat, lon);
         return -2;
     }
-    console.log('Closest sensors', lat, lon, sensors);
+    // console.log('Closest sensors', lat, lon, sensors);
 
-    //TODO: I'm sure it could be done in a more elegant way
     const dict = sensors.reduce((result, s) => {
         result[s.id] = s;
         return result;
     }, {});
-    // console.log("Sensor dictionary", dict);
 
     const query = sensors.map(v => v.id).join('|');
-    // console.log('Query string:', query);
 
     try {
         let json;
@@ -175,10 +172,12 @@ module.exports.value = async(lat, lon) => {
                 // Look up original sensor from the sensor list
                 const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
 
-                const v = LRAPA(raw_pm25);
+                const v = use_lrapa ? LRAPA(raw_pm25) : raw_pm25;
 
-                console.log('Sensor "%s" PM2.5: %d AQI (raw): %d PM2.5 (LRAPA): %d AQI (LRAPA): %d',
-                    sensor_json.Label, raw_pm25, AQI(raw_pm25), v, AQI(v));
+                // console.log('Sensor "%s" PM2.5: %d AQI (raw): %d PM2.5 (LRAPA): %d AQI (LRAPA): %d',
+                //     sensor_json.Label, 
+                //     raw_pm25, AQI(raw_pm25), 
+                //     LRAPA(raw_pm25), AQI(LRAPA(raw_pm25)));
 
                 const d = MAX_DISTANCE - sensor.distance;
 
@@ -197,5 +196,5 @@ module.exports.value = async(lat, lon) => {
 }
 
 // (async() => {
-//     console.log(await module.exports.value(37.846336, -122.26603));
+//     console.log(await module.exports.value(37.846336, -122.26603, false));
 // })();
