@@ -3,7 +3,7 @@ const buckets = [{
         max: 50,
         level: 'clean',
         title: 'Clean',
-        voice: 'The air is perfect. Go outside and play!'
+        voice: 'The air is clean. Go outside and play!'
     },
     {
         min: 51,

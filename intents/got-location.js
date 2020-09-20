@@ -6,9 +6,10 @@ module.exports = async(req) => {
         if (granted) {
             console.log(conv.device.location);
             conv.user.storage.coords = conv.device.location;
+            conv.user.storage.coords_ts = Date.now();
             return await stats.get(conv);
         } else {
-            conv.close('Well, goodbye then');
+            conv.close('Well, goodbye then.');
         }
     });
 }
