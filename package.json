@@ -29,6 +29,6 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "docker build -t codeminders/violet-air .",
         "start": "docker run -p 8081:80 --name violet-air-app -d codeminders/violet-air",
-        "stop": "docker kill violet-air-app"
+        "stop": "docker rm --force violet-air-app"
     }
 }
