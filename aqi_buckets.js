@@ -2,28 +2,28 @@ const buckets = [{
         min: 0,
         max: 50,
         level: 'clean',
-        title: 'Clean',
+        title: 'Perfect',
         voice: 'The air is clean. Go outside and play!'
     },
     {
         min: 51,
         max: 100,
         level: 'acceptable',
-        title: 'Acceptable',
+        title: 'Alright',
         voice: 'The air is fine. Breathe freely!'
     },
     {
         min: 101,
         max: 150,
         level: 'not-perfect',
-        title: 'Not perfect',
+        title: 'Not Perfect',
         voice: 'The air quality could be better. But you can go outside if you want.'
     },
     {
         min: 151,
         max: 200,
         level: 'not-good',
-        title: 'Not good',
+        title: 'Not Good',
         voice: 'The air quality is not good. But you can go outside if you really have to.'
     },
     {
@@ -44,7 +44,7 @@ const buckets = [{
         min: 401,
         max: 1000,
         level: 'extremely-bad',
-        title: 'Extremely bad',
+        title: 'Get Out!',
         voice: 'Are you on Mars? You really should not be here.'
     }
 ]

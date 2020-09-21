@@ -67,6 +67,7 @@ body.no-backgrounds {
     height: 40px;
     width: 100%;
     background: #384048;
+    /* background: transparent; */
     position: absolute;
     bottom: 0;
 }

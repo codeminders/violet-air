@@ -29,6 +29,12 @@ const load = async() => {
             console.error('Parsing error', e)
             return -1;
         }
+
+        if(json.data === undefined) {
+            console.error('Unexpected JSON from server.', body.slice(0, 200));
+            return -1;
+        }
+
         cache = json.data.
         filter(row => row[23] == 0). //only outdoor sensors
         map(row => {
@@ -79,8 +85,25 @@ const closests = async(lat, lon) => {
     }).slice(0, NUM_SENSORS);
 }
 
+const Correction = {
+    NONE: "NONE",
+    LRAPA: "LRAPA",
+    EPA: "EPA",
+    AQandU: "AQandU"
+}
+
 // LRAPA correction https://www.lrapa.org/DocumentCenter/View/4147/PurpleAir-Correction-Summary
 const LRAPA = (x) => Math.max(0.5 * x - 0.66, 0);
+
+// EPA correction https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
+// PM2.5 corrected= 0.52*[PA_cf1(avgAB)] - 0.085*RH +5.71
+// x - raw PM2.5 value
+// h - humidity
+const EPA = (x, h) => Math.max(0.52*x - 0.085*h + 5.71, 0);
+
+//AQandU correction https://www.aqandu.org/airu_sensor#calibrationSection
+// PM2.5 (µg/m³) = 0.778 x PA + 2.65
+const AQandU = (x) => 0.778*x + 2.65;
 
 // Calculate AQI for PM2.5.
 // https://www3.epa.gov/airnow/aqi-technical-assistance-document-sept2018.pdf
@@ -127,7 +150,7 @@ const sensor_pm25 = (data) => {
     return stats.v1; // getting 10 minutes averages
 }
 
-module.exports.value = async(lat, lon, use_lrapa=true) => {
+module.exports.value = async(lat, lon, correction = Correction.NONE) => {
     let t = 0;
     let n = 0;
     let dt = 0;
@@ -166,18 +189,34 @@ module.exports.value = async(lat, lon, use_lrapa=true) => {
         }
 
         let n = 0;
+        let humidity = 0; // this is an ugly hack. we reuse the last known humidity because it is only repoted on A channel, but not on B channel
         for (const sensor_json of json.results) {
             const raw_pm25 = sensor_pm25(sensor_json);
             if (raw_pm25 >= 0) {
                 // Look up original sensor from the sensor list
                 const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
 
-                const v = use_lrapa ? LRAPA(raw_pm25) : raw_pm25;
+                if(sensor_json.humidity !== undefined)
+                    humidity = sensor_json.humidity;
 
-                // console.log('Sensor "%s" PM2.5: %d AQI (raw): %d PM2.5 (LRAPA): %d AQI (LRAPA): %d',
-                //     sensor_json.Label, 
-                //     raw_pm25, AQI(raw_pm25), 
-                //     LRAPA(raw_pm25), AQI(LRAPA(raw_pm25)));
+                let v = 0;
+                switch(correction) {
+                    case Correction.NONE:
+                        v = raw_pm25;
+                        break;
+                    case Correction.LRAPA:
+                        v = LRAPA(raw_pm25);
+                        break;
+                    case Correction.EPA:
+                        v = EPA(raw_pm25, humidity);
+                        break;
+                    case Correction.AQandU:
+                        v = AQandU(raw_pm25);
+                        break;
+                }
+
+                console.log('"%s" PA (PM2.5: %d AQI: %d) %s (PM2.5: %d AQI: %d',
+                    sensor_json.Label, raw_pm25, AQI(raw_pm25), correction, v, AQI(v));
 
                 const d = MAX_DISTANCE - sensor.distance;
 
@@ -196,5 +235,7 @@ module.exports.value = async(lat, lon, use_lrapa=true) => {
 }
 
 // (async() => {
-//     console.log(await module.exports.value(37.846336, -122.26603, false));
+//     //
+//     // console.log(await module.exports.value(37.846336, -122.26603, Correction.NONE));
+//     console.log(await module.exports.value(37.249401, -121.950857, Correction.EPA));
 // })();

@@ -13,7 +13,7 @@ const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
-    const value = await sensors.value(coordinates.latitude, coordinates.longitude);
+    const value = await sensors.value(coordinates.latitude, coordinates.longitude, "EPA"); //TODO: fix that
     if (value == -1) {
         // TODO we got no data
         conv.close('Oops... Cannot get the air quality data from Purple Air');
@@ -43,7 +43,8 @@ module.exports.get = async(conv) => {
                     chips
                 }
             }));
-        } else if (conv.screen) {
+        } else 
+        if (conv.screen) {
             const card = new df.BasicCard({
                 title: value,
                 subtitle: bucket.title,

@@ -1,2 +1,2 @@
 language = "nodejs"
-run = "yarn global add forever; yarn start"
+run = "yarn global add forever; yarn server"

@@ -2,7 +2,7 @@ const stats = require('./weather-stats');
 const request_location = require('./request-location');
 
 
-const LOCATION_EXPIRATION = 10 * 60 * 1000; // 10 minutes in milliseconds
+const LOCATION_EXPIRATION = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 const is_phone = (conv) => conv.surface.capabilities.has('actions.capability.WEB_BROWSER')
 
