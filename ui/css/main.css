@@ -58,3 +58,7 @@ body.extremely-bad {
     background-color: maroon;
     background-image: url('../images/extremely-bad.jpg');
 }
+
+body.no-backgrounds {
+    background-image: none;
+}

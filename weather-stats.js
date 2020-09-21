@@ -30,11 +30,13 @@ module.exports.get = async(conv) => {
                 data: {
                     value: value,
                     level: bucket.level,
-                    title: bucket.title
+                    title: bucket.title,
+                    backgrounds: !conv.user.storage.hasOwnProperty('backgrounds') ||
+                        conv.user.storage.backgrounds
                 }
             }));
         } else {
-            conv.close(prefix(value) + bucket.voice);
+            conv.ask(prefix(value) + bucket.voice);
         }
     }
 }
