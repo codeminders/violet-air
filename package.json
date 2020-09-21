@@ -25,7 +25,10 @@
         "require-all": "^3.0.0"
     },
     "scripts": {
-        "start": "forever -w index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "server": "forever -w index.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "docker build -t codeminders/violet-air .",
+        "start": "docker run -p 8081:80 --name violet-air-app -d codeminders/violet-air",
+        "stop": "docker rm --force violet-air-app"
     }
 }

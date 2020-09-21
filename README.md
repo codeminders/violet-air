@@ -20,7 +20,7 @@ yarn install
 ### running
 
 ```
-yarn start
+yarn server
 ```
 
 Then, start ngrok or any other tunnel like
