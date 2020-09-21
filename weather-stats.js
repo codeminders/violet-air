@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const df = require('actions-on-google');
 
 const sensors = require('./sensors');
@@ -27,8 +30,8 @@ module.exports.get = async(conv) => {
         const bucket = buckets.get_bucket(value);
         const prefs = preferences.get(conv);
         const chips = suggestions(conv);
+        conv.add(prefix(value) + bucket.voice);
         if (conv.surface.capabilities.has('actions.capability.INTERACTIVE_CANVAS')) {
-            await conv.add(prefix(value) + bucket.voice);
             return await conv.add(new df.HtmlResponse({
                 url: 'https://' + conv.headers.host + '/google-assistant/index.html',
                 data: {
@@ -40,8 +43,21 @@ module.exports.get = async(conv) => {
                     chips
                 }
             }));
+        } else if (conv.screen) {
+            const card = new df.BasicCard({
+                title: value,
+                subtitle: bucket.title,
+                text: prefix(value) + bucket.voice
+            });
+            if (fs.existsSync(path.join(__dirname, 'ui', 'images', bucket.level + '.jpg'))) {
+                const image = new df.Image({
+                    url: 'https://' + conv.headers.host + '/google-assistant/images/' + bucket.level + '.jpg',
+                    alt: bucket.title
+                });
+                card.image = image;
+            }
+            conv.ask(card);
         } else {
-            conv.ask(prefix(value) + bucket.voice);
             if (conv.screen && chips.length) {
                 conv.ask(new df.Suggestions(chips));
             }
