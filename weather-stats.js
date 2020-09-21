@@ -3,7 +3,7 @@ const df = require('actions-on-google');
 const sensors = require('./sensors');
 const buckets = require('./aqi_buckets');
 
-const prefix = (v) => 'The AQI is ' + v + '. '
+const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
@@ -18,8 +18,8 @@ module.exports.get = async(conv) => {
         conv.close('No sensors found around you. Maybe buy one on PurpleAir.com?');
     } else {
         const bucket = buckets.get_bucket(value);
-        await conv.add(prefix(value) + bucket.voice);
         if (conv.surface.capabilities.has('actions.capability.INTERACTIVE_CANVAS')) {
+            await conv.add(prefix(value) + bucket.voice);
             return await conv.add(new df.HtmlResponse({
                 url: 'https://' + conv.headers.host + '/google-assistant/index.html',
                 data: {
@@ -29,6 +29,8 @@ module.exports.get = async(conv) => {
                 }
             }));
         }
-        // conv.add('Hint: You can say "update location" if you moved');
+        else {
+            conv.close(prefix(value) + bucket.voice);
+        }
     }
 }
