@@ -8,13 +8,18 @@ const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
-    // const value = 121;
     const value = await sensors.value(coordinates.latitude, coordinates.longitude);
     if (value == -1) {
         // TODO we got no data
         conv.close('Oops... Cannot get the air quality data from Purple Air');
     } else if (value == -2) {
-        // TODO we got no sensor nearby
+        if (conv.screen && conv.surface.capabilities.has('actions.capability.WEB_BROWSER')) {
+            conv.ask(new df.LinkOutSuggestion({
+                name: 'PurpleAir.com',
+                url: 'https://www.purpleair.com/',
+            }));
+            return conv.close('No sensors found around you. Maybe buy one on PurpleAir.com?');
+        }
         conv.close('No sensors found around you. Maybe buy one on PurpleAir.com?');
     } else {
         const bucket = buckets.get_bucket(value);
@@ -28,8 +33,7 @@ module.exports.get = async(conv) => {
                     title: bucket.title
                 }
             }));
-        }
-        else {
+        } else {
             conv.close(prefix(value) + bucket.voice);
         }
     }
