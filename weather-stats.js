@@ -2,6 +2,8 @@ const df = require('actions-on-google');
 
 const sensors = require('./sensors');
 const buckets = require('./aqi_buckets');
+const suggestions = require('./suggestion-chips');
+const preferences = require('./preferences');
 
 const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 
@@ -23,20 +25,26 @@ module.exports.get = async(conv) => {
         conv.close('No sensors found around you. Maybe buy one on PurpleAir.com?');
     } else {
         const bucket = buckets.get_bucket(value);
+        const prefs = preferences.get(conv);
+        const chips = suggestions(conv);
         if (conv.surface.capabilities.has('actions.capability.INTERACTIVE_CANVAS')) {
             await conv.add(prefix(value) + bucket.voice);
             return await conv.add(new df.HtmlResponse({
                 url: 'https://' + conv.headers.host + '/google-assistant/index.html',
                 data: {
+                    screen: 'stats',
                     value: value,
                     level: bucket.level,
                     title: bucket.title,
-                    backgrounds: !conv.user.storage.hasOwnProperty('backgrounds') ||
-                        conv.user.storage.backgrounds
+                    backgrounds: prefs.backgrounds,
+                    chips
                 }
             }));
         } else {
             conv.ask(prefix(value) + bucket.voice);
+            if (conv.screen && chips.length) {
+                conv.ask(new df.Suggestions(chips));
+            }
         }
     }
 }

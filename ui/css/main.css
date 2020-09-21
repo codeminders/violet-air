@@ -62,3 +62,35 @@ body.extremely-bad {
 body.no-backgrounds {
     background-image: none;
 }
+
+#footer {
+    height: 40px;
+    width: 100%;
+    background: #384048;
+    position: absolute;
+    bottom: 0;
+}
+
+.buttons {
+    height: 100%;
+    width: 100%;
+    align-items: flex-start;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+button {
+    outline: none;
+    cursor: pointer;
+    color: #fff;
+    background: transparent;
+    border: 1px solid #fff;
+    font-weight: 300;
+    width: auto;
+    border-radius: 25px;
+    min-width: 120px;
+    margin: 4px 2px 4px 10px;
+    line-height: 1.5em;
+    font-size: 12px;
+    padding: 5px;
+}
