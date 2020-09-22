@@ -31,16 +31,19 @@ body.clean {
 
 body.acceptable {
     background-color: #b3b300;
+    color: #fff;
     background-image: url('../images/clean.jpg');
 }
 
 body.not-perfect {
     background-color: orange;
+    color: #fff;
     background-image: url('../images/not-perfect.jpg');
 }
 
 body.not-good {
     background-color: red;
+    color: #fff;
     background-image: url('../images/not-good.jpg');
 }
 
@@ -51,6 +54,7 @@ body.pretty-bad {
 
 body.terrible {
     background-color: brown;
+    color: #fff;
     background-image: url('../images/terrible.jpg');
 }
 
@@ -61,10 +65,6 @@ body.extremely-bad {
 
 body.no-backgrounds {
     background-image: none;
-}
-
-body.no-backgrounds.acceptable {
-    color:black
 }
 
 #footer {
@@ -88,9 +88,9 @@ body.no-backgrounds.acceptable {
 button {
     outline: none;
     cursor: pointer;
-    color: white;
     background: transparent;
-    border: 3px solid white;
+    border-style: solid;
+    border-width: 3px;
     font-weight: 400;
     width: auto;
     border-radius: 25px;
@@ -101,8 +101,28 @@ button {
     padding: 7px;
 }
 
-/* button.acceptable {
-    color:black;
-    border: 3px solid black;
-} */
+.clean .buttons button,
+.acceptable .buttons button,
+.not-perfect .buttons button {
+    color: #fff;
+    border-color: #fff;
+}
 
+.acceptable.no-backgrounds,
+.not-perfect.no-backgrounds {
+    color: #000;
+}
+
+.acceptable.no-backgrounds .buttons button,
+.not-perfect.no-backgrounds .buttons button {
+    color: #000;
+    border-color: #000;
+}
+
+.not-good .buttons button,
+.pretty-bad .buttons button,
+.terrible .buttons button,
+.extremely-bad .buttons button {
+    color: #fff;
+    border-color: #fff;
+}
