@@ -17,7 +17,8 @@ const std = (array, m, fn) => {
     return Math.sqrt(array.reduce((a, b) => a + Math.pow(fn(b) - m, 2), 0) / array.length); 
 }
 
-const filter_outliers = (array, fn) => {
+module.exports.filter_outliers = (array, fn) => {
+
     const m = mean(array, fn);
     const s = std(array, m, fn);
     const cutoff = s * 1.5; // this could be tunned
@@ -29,6 +30,6 @@ const filter_outliers = (array, fn) => {
     return array.filter(x => fn(x) > low && fn(x) < high);
 }
 
-console.log(mean(arr, (i) => i.v));
+// console.log(mean(arr, (i) => i.v));
 // console.log(std(arr, (i) => i.v));
-console.log(filter_outliers(arr, (i) => i.v));
+// console.log(filter_outliers(arr, (i) => i.v));

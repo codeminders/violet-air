@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const outliers = require('./outliers');
 
 const MAX_DISTANCE = 5000; // max distance from the user's location (metres)
 const NUM_SENSORS = 10; //  max number of sensors to consider
@@ -189,9 +190,14 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
             return -1;
         }
 
+        const sensors_list = outliers.filter_outliers(json.results, (i) => +i.PM2_5Value);
+
+        // console.log("Before: " + sensors.length*2);
+        // console.log("without outliers: " + sensors_list.length);
+
         let n = 0;
         let humidity = 0; // this is an ugly hack. we reuse the last known humidity because it is only repoted on A channel, but not on B channel
-        for (const sensor_json of json.results) {
+        for (const sensor_json of sensors_list) {
             const raw_pm25 = sensor_pm25(sensor_json);
             if (raw_pm25 >= 0) {
                 // Look up original sensor from the sensor list
@@ -238,5 +244,5 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
 // (async() => {
 //     //
 //     // console.log(await module.exports.value(37.846336, -122.26603, Correction.NONE));
-//     console.log(await module.exports.value(37.249401, -121.950857, Correction.EPA));
+//     console.log(await module.exports.value(37.416682, -122.103521, Correction.EPA));
 // })();
