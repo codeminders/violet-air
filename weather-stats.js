@@ -13,6 +13,7 @@ const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
+    // const value = 421;
     const value = await sensors.value(coordinates.latitude, coordinates.longitude, "EPA"); //TODO: fix that
     if (value == -1) {
         // TODO we got no data

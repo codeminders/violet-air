@@ -30,7 +30,7 @@ body.clean {
 }
 
 body.acceptable {
-    background-color: yellow;
+    background-color: #b3b300;
     background-image: url('../images/clean.jpg');
 }
 
@@ -63,13 +63,18 @@ body.no-backgrounds {
     background-image: none;
 }
 
+body.no-backgrounds.acceptable {
+    color:black
+}
+
 #footer {
-    height: 40px;
+    height: 20vmin;
     width: 100%;
-    background: #384048;
-    /* background: transparent; */
+    /* background: #384048; */
+    background: transparent;
     position: absolute;
     bottom: 0;
+    padding: 0 0 0 0;
 }
 
 .buttons {
@@ -83,15 +88,21 @@ body.no-backgrounds {
 button {
     outline: none;
     cursor: pointer;
-    color: #fff;
+    color: white;
     background: transparent;
-    border: 1px solid #fff;
-    font-weight: 300;
+    border: 3px solid white;
+    font-weight: 400;
     width: auto;
     border-radius: 25px;
     min-width: 120px;
     margin: 4px 2px 4px 10px;
     line-height: 1.5em;
-    font-size: 12px;
-    padding: 5px;
+    font-size: 4.5vmin;
+    padding: 7px;
 }
+
+/* button.acceptable {
+    color:black;
+    border: 3px solid black;
+} */
+
