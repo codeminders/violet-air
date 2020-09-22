@@ -99,7 +99,8 @@ const LRAPA = (x) => Math.max(0.5 * x - 0.66, 0);
 // PM2.5 corrected= 0.52*[PA_cf1(avgAB)] - 0.085*RH +5.71
 // x - raw PM2.5 value
 // h - humidity
-const EPA = (x, h) => Math.max(0.52*x - 0.085*h + 5.71, 0);
+// only apply for PM2.5 > 65
+const EPA = (x, h) => x < 65 ? x :Math.max(0.52*x - 0.085*h + 5.71, 0);
 
 //AQandU correction https://www.aqandu.org/airu_sensor#calibrationSection
 // PM2.5 (µg/m³) = 0.778 x PA + 2.65
@@ -215,7 +216,7 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
                         break;
                 }
 
-                console.log('"%s" PA (PM2.5: %d AQI: %d) %s (PM2.5: %d AQI: %d',
+                console.log('"%s" PA (PM2.5: %d AQI: %d) %s (PM2.5: %d AQI: %d)',
                     sensor_json.Label, raw_pm25, AQI(raw_pm25), correction, v, AQI(v));
 
                 const d = MAX_DISTANCE - sensor.distance;
