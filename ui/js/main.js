@@ -22,7 +22,10 @@ $(() => {
                 $('#footer').show();
                 const buttons = $('.buttons').empty();
                 data.chips.forEach((c) => {
-                    const button = $('<button/>').text(c);
+                    const label = typeof c === 'string' ? c : c.text;
+                    const className = typeof c === 'string' ? '' : c.classname;
+                    const button = $('<button/>').addClass(className).
+                    append($('<div/>', { class: 'icon' }).text(label));
                     buttons.append(button);
                 });
 

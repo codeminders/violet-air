@@ -7,7 +7,8 @@ body {
 }
 
 .container {
-    height: 100%;
+    height: calc(100% - 20vmin - 100px);
+    top: 100px;
     width: 100%;
     display: flex;
     position: fixed;
@@ -94,11 +95,26 @@ button {
     font-weight: 400;
     width: auto;
     border-radius: 25px;
-    min-width: 120px;
     margin: 4px 2px 4px 10px;
     line-height: 1.5em;
     font-size: 4.5vmin;
     padding: 7px;
+}
+
+.location {
+    margin: 5px;
+    text-indent: -9999px;
+    width: 46px !important;
+}
+
+.location .icon {
+    mask: url('../images/marker.svg') no-repeat;
+    -webkit-mask: url('../images/marker.svg') no-repeat;
+    mask-size: 20px auto;
+    -webkit-mask-size: 20px auto;
+    background-color: #fff;
+    mask-position: center;
+    -webkit-mask-position: center;
 }
 
 .clean .buttons button,
@@ -117,6 +133,11 @@ button {
 .not-perfect.no-backgrounds .buttons button {
     color: #000;
     border-color: #000;
+}
+
+.acceptable.no-backgrounds .location .icon,
+.not-perfect.no-backgrounds .location .icon {
+    background-color: #000;
 }
 
 .not-good .buttons button,

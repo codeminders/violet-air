@@ -13,7 +13,7 @@ const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
-    // const value = 421;
+    // const value = 70;
     const value = await sensors.value(coordinates.latitude, coordinates.longitude, "EPA"); //TODO: fix that
     if (value == -1) {
         // TODO we got no data
@@ -30,7 +30,7 @@ module.exports.get = async(conv) => {
     } else {
         const bucket = buckets.get_bucket(value);
         const prefs = preferences.get(conv);
-        const chips = suggestions(conv);
+        const chips = suggestions.chips(conv);
         conv.add(prefix(value) + bucket.voice);
         if (conv.surface.capabilities.has('actions.capability.INTERACTIVE_CANVAS')) {
             return await conv.add(new df.HtmlResponse({
@@ -44,7 +44,7 @@ module.exports.get = async(conv) => {
                     chips
                 }
             }));
-        } else 
+        } else
         if (conv.screen) {
             const card = new df.BasicCard({
                 title: value,
@@ -61,7 +61,7 @@ module.exports.get = async(conv) => {
             conv.ask(card);
         } else {
             if (conv.screen && chips.length) {
-                conv.ask(new df.Suggestions(chips));
+                conv.ask(new df.Suggestions(suggestions.standard(chips)));
             }
         }
     }

@@ -6,7 +6,7 @@ const suggestions = require('../suggestion-chips');
 module.exports = async() => {
     dialogflow.intent('Default Fallback Intent', async(conv) => {
         conv.add('Sorry, I did not get that. You can ask me to update your location or change the pollution type settings.');
-        const chips = suggestions(conv);
+        const chips = suggestions.chips(conv);
         if (!conv.screen) {
             return;
         }
@@ -19,6 +19,6 @@ module.exports = async() => {
                 }
             }));
         }
-        conv.add(new df.Suggestions(chips));
+        conv.add(new df.Suggestions(suggestions.standard(chips)));
     });
 }
