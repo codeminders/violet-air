@@ -11,10 +11,13 @@ const std = (array, m, fn) => {
 
 module.exports.filter_outliers = (array, fn) => {
 
-    // console.log(array[0]);
-    // console.log(fn(array[0]));
-
     const m = mean(array, fn);
+
+    if(isNaN(m)) {
+        console.log(array[0]);
+        console.log(fn(array[0]));
+    }
+
     const s = std(array, m, fn);
     const cutoff = s * 1.5; // this could be tunned
     const low = m - cutoff;
