@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+
 const buckets = [{
         min: 0,
         max: 50,
@@ -49,6 +52,26 @@ const buckets = [{
     }
 ]
 
+const random_background = (level) => {
+    const folder = path.join(__dirname, 'ui', 'images', level);
+    if (!fs.existsSync(folder)) {
+        return {};
+    }
+    const items = fs.readdirSync(folder).filter(v => {
+        return v.endsWith('.jpg');
+    });
+    if (!items.length) {
+        return {};
+    }
+    const item = items[Math.floor(Math.random() * items.length)];
+    return {
+        background_index: item.substring(0, item.indexOf('.')),
+        background_path: level + '/' + item
+    };
+
+}
+
 module.exports.get_bucket = (value) => {
-    return buckets.find(b => value >= b.min && value <= b.max);
+    const ret = Object.assign({}, buckets.find(b => value >= b.min && value <= b.max));
+    return Object.assign(ret, random_background(ret.level));
 }

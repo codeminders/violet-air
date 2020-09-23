@@ -27,41 +27,66 @@ body {
 
 body.clean {
     background-color: green;
-    background-image: url('../images/clean.jpg');
+}
+
+.clean-1 {
+    background-image: url('../images/clean/1.jpg');
 }
 
 body.acceptable {
     background-color: #b3b300;
     color: #fff;
-    background-image: url('../images/clean.jpg');
 }
 
 body.not-perfect {
     background-color: orange;
     color: #fff;
-    background-image: url('../images/not-perfect.jpg');
+}
+
+.not-perfect-1 {
+    background-image: url('../images/not-perfect/1.jpg');
 }
 
 body.not-good {
     background-color: red;
     color: #fff;
-    background-image: url('../images/not-good.jpg');
+}
+
+.not-good-1 {
+    background-image: url('../images/not-good/1.jpg');
 }
 
 body.pretty-bad {
     background-color: purple;
-    background-image: url('../images/pretty-bad.jpg');
+}
+
+.pretty-bad-1 {
+    background-image: url('../images/pretty-bad/1.jpg');
 }
 
 body.terrible {
     background-color: brown;
     color: #fff;
-    background-image: url('../images/terrible.jpg');
+}
+
+.terrible-1 {
+    background-image: url('../images/terrible/1.jpg');
 }
 
 body.extremely-bad {
     background-color: maroon;
-    background-image: url('../images/extremely-bad.jpg');
+}
+
+.extremely-bad-1 {
+    background-image: url('../images/extremely-bad/1.jpg');
+}
+
+.extremely-bad-2 {
+    background-image: url('../images/extremely-bad/2.jpg');
+}
+
+.extremely-bad-3 {
+    background-image: url('../images/extremely-bad/3.jpg');
 }
 
 body.no-backgrounds {

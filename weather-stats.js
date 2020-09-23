@@ -1,6 +1,3 @@
-const fs = require('fs');
-const path = require('path');
-
 const df = require('actions-on-google');
 
 const sensors = require('./sensors');
@@ -14,7 +11,7 @@ module.exports.get = async(conv, options = {}) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
     const correction = conv.user.storage.smoke_correction ? "EPA" : "NONE";
-    // const value = 70;
+    // const value = 441;
     const value = await sensors.value(coordinates.latitude, coordinates.longitude, correction);
     if (value == -1) {
         // TODO we got no data
@@ -43,6 +40,7 @@ module.exports.get = async(conv, options = {}) => {
                     screen: 'stats',
                     value: value,
                     level: bucket.level,
+                    background_index: bucket.background_index,
                     title: bucket.title,
                     backgrounds: prefs.backgrounds,
                     chips
@@ -54,9 +52,9 @@ module.exports.get = async(conv, options = {}) => {
                 subtitle: bucket.title,
                 text: prefix(value) + bucket.voice
             });
-            if (fs.existsSync(path.join(__dirname, 'ui', 'images', bucket.level + '.jpg'))) {
+            if (bucket.background_path) {
                 const image = new df.Image({
-                    url: 'https://' + conv.headers.host + '/google-assistant/images/' + bucket.level + '.jpg',
+                    url: 'https://' + conv.headers.host + '/google-assistant/images/' + bucket.background_path,
                     alt: bucket.title
                 });
                 card.image = image;

@@ -13,7 +13,14 @@ $(() => {
             if (data.screen == 'stats') {
                 $('#value').show().text(data.value);
                 $('#label').show().text(data.title);
-                $(document.body).removeClass().addClass(data.level + (data.backgrounds ? '' : ' no-backgrounds'));
+                let classes = data.level;
+                if (data.background_index) {
+                    classes += ' ' + data.level + '-' + data.background_index;
+                }
+                if (!data.backgrounds) {
+                    classes += ' no-backgrounds';
+                }
+                $(document.body).removeClass().addClass(classes);
             } else {
                 $('#value,#label').hide();
                 $(document.body).removeClass().addClass('fallback');
