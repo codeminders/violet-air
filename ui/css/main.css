@@ -7,22 +7,45 @@ body {
 }
 
 .container {
-    height: calc(100% - 20vmin - 100px);
-    top: 100px;
+    position: absolute;
     width: 100%;
-    display: flex;
-    position: fixed;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+    height: calc(100% - 15vmin - 100px);
+    top: 100px;
 }
 
 #value {
-    font-size: 50vmin;
+    width: 100%;
+    height: 45vmin;
+    text-align: center;
+    font-size: 40vmin;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
 }
 
 #label {
-    font-size: 20vmin;
+    width: 100%;
+    height: 30vmin;
+    text-align: center;
+    vertical-align: top;
+    font-size: 10vmin;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+@media (orientation: portrait) {
+    .container {
+        height: calc(100% - 20vmin - 50px);
+    }
+    #value {
+        height: 45vh;
+        font-size: 25vh;
+    }
+    #label {
+        height: 30h;
+        font-size: 5vh;
+    }
 }
 
 body.clean {
@@ -54,6 +77,10 @@ body.not-good {
 
 .not-good-1 {
     background-image: url('../images/not-good/1.jpg');
+}
+
+.not-good-2 {
+    background-image: url('../images/not-good/2.jpg');
 }
 
 body.pretty-bad {
@@ -94,13 +121,11 @@ body.no-backgrounds {
 }
 
 #footer {
-    height: 20vmin;
+    height: 15vmin;
     width: 100%;
-    /* background: #384048; */
-    background: transparent;
     position: absolute;
     bottom: 0;
-    padding: 0 0 0 0;
+    padding: 0;
 }
 
 .buttons {
@@ -109,6 +134,8 @@ body.no-backgrounds {
     align-items: flex-start;
     display: flex;
     flex-wrap: wrap;
+    justify-content: flex-end;
+    padding-right: 100px;
 }
 
 button {
@@ -127,7 +154,7 @@ button {
 }
 
 .location {
-    margin: 5px;
+    margin: 5px 20px 5px 5px;
     text-indent: -9999px;
     width: 46px !important;
 }

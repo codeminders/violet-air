@@ -11,8 +11,8 @@ $(() => {
             console.log(data);
 
             if (data.screen == 'stats') {
-                $('#value').show().text(data.value);
-                $('#label').show().text(data.title);
+                $('#value').show().empty().append($('<span/>').text(data.value));
+                $('#label').show().empty().append($('<span/>').text(data.title));
                 let classes = data.level;
                 if (data.background_index) {
                     classes += ' ' + data.level + '-' + data.background_index;
