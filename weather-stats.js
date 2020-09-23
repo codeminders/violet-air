@@ -10,12 +10,12 @@ const preferences = require('./preferences');
 
 const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 
-module.exports.get = async(conv) => {
+module.exports.get = async(conv, options = {}) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
     const correction = conv.user.storage.smoke_correction ? "EPA" : "NONE";
     // const value = 70;
-    const value = await sensors.value(coordinates.latitude, coordinates.longitude, correction); 
+    const value = await sensors.value(coordinates.latitude, coordinates.longitude, correction);
     if (value == -1) {
         // TODO we got no data
         conv.close('Oops... Cannot get the air quality data from Purple Air');
@@ -32,6 +32,9 @@ module.exports.get = async(conv) => {
         const bucket = buckets.get_bucket(value);
         const prefs = preferences.get(conv);
         const chips = suggestions.chips(conv);
+        if (options.feedback) {
+            conv.add(options.feedback);
+        }
         conv.add(prefix(value) + bucket.voice);
         if (conv.surface.capabilities.has('actions.capability.INTERACTIVE_CANVAS')) {
             return await conv.add(new df.HtmlResponse({

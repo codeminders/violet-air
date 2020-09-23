@@ -11,7 +11,7 @@ const need_location = (conv) => {
         (is_phone(conv) && Date.now() - conv.user.storage.coords_ts > LOCATION_EXPIRATION);
 }
 
-module.exports = async(conv) => {
+module.exports = async(conv, options = {}) => {
     if (conv.user.verification !== 'VERIFIED') {
         return await conv.close('Sorry, we can\'t obtain location for guest users');
     }
@@ -20,5 +20,5 @@ module.exports = async(conv) => {
         return await request_location(conv);
     }
 
-    return await stats.get(conv);
+    return await stats.get(conv, options);
 }
