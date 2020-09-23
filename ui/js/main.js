@@ -16,7 +16,7 @@ $(() => {
                 $(document.body).removeClass().addClass(data.level + (data.backgrounds ? '' : ' no-backgrounds'));
             } else {
                 $('#value,#label').hide();
-                $(document.body).removeClass();
+                $(document.body).removeClass().addClass('fallback');
             }
             if (data.chips && data.chips.length) {
                 $('#footer').show();

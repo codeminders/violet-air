@@ -136,7 +136,8 @@ button {
 }
 
 .acceptable.no-backgrounds .location .icon,
-.not-perfect.no-backgrounds .location .icon {
+.not-perfect.no-backgrounds .location .icon,
+.fallback .location .icon {
     background-color: #000;
 }
 
