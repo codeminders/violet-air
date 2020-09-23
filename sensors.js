@@ -190,7 +190,7 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
             return -1;
         }
 
-        const sensors_list = outliers.filter_outliers(json.results, (i) => +i.PM2_5Value);
+        const sensors_list = outliers.filter_outliers(json.results, (i) => parseFloat(i.PM2_5Value));
 
         // console.log("Before: " + sensors.length*2);
         // console.log("without outliers: " + sensors_list.length);

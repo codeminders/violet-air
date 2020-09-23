@@ -14,8 +14,9 @@ module.exports.filter_outliers = (array, fn) => {
     const m = mean(array, fn);
 
     if(isNaN(m)) {
-        console.log(fn(array[0]));
-        console.lot(typeof fn(array[0]));
+        for (i in array) {
+            console.log(fn(i));
+        }
     }
 
     const s = std(array, m, fn);
