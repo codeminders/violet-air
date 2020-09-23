@@ -1,11 +1,3 @@
-const arr = [
-    {v:12},
-    {v:6},
-    {v:13},
-    {v:8},
-    {v:63},
-    {v:10}
-];
 
 
 const mean = (array, fn) => {
@@ -19,6 +11,9 @@ const std = (array, m, fn) => {
 
 module.exports.filter_outliers = (array, fn) => {
 
+    // console.log(array[0]);
+    // console.log(fn(array[0]));
+
     const m = mean(array, fn);
     const s = std(array, m, fn);
     const cutoff = s * 1.5; // this could be tunned
@@ -30,6 +25,14 @@ module.exports.filter_outliers = (array, fn) => {
     return array.filter(x => fn(x) > low && fn(x) < high);
 }
 
+// const arr = [
+//     {v:12},
+//     {v:6},
+//     {v:13},
+//     {v:8},
+//     {v:63},
+//     {v:10}
+// ];
 // console.log(mean(arr, (i) => i.v));
 // console.log(std(arr, (i) => i.v));
 // console.log(filter_outliers(arr, (i) => i.v));

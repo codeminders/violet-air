@@ -13,8 +13,9 @@ const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 module.exports.get = async(conv) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
+    const correction = conv.user.storage.smoke_correction ? "EPA" : "NONE";
     // const value = 70;
-    const value = await sensors.value(coordinates.latitude, coordinates.longitude, "EPA"); //TODO: fix that
+    const value = await sensors.value(coordinates.latitude, coordinates.longitude, correction); 
     if (value == -1) {
         // TODO we got no data
         conv.close('Oops... Cannot get the air quality data from Purple Air');
