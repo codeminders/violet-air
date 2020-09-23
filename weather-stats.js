@@ -48,8 +48,7 @@ module.exports.get = async(conv, options = {}) => {
                     chips
                 }
             }));
-        } else
-        if (conv.screen) {
+        } else if (conv.screen) {
             const card = new df.BasicCard({
                 title: value,
                 subtitle: bucket.title,
@@ -63,8 +62,7 @@ module.exports.get = async(conv, options = {}) => {
                 card.image = image;
             }
             conv.ask(card);
-        } else {
-            if (conv.screen && chips.length) {
+            if (chips.length) {
                 conv.ask(new df.Suggestions(suggestions.standard(chips)));
             }
         }
