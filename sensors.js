@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 const fetch = require('node-fetch');
 const outliers = require('./outliers');
 
@@ -17,16 +19,26 @@ const MAX_AGE = 10; // filer out sensors not reporting data for X minutes
 let cache = [];
 let last_update_ts = 0;
 
+const DEBUG_MODE = false;
+
 const load = async() => {
     console.log('refreshing list of sensors');
     try {
-        const response = await fetch('https://www.purpleair.com/data.json');
-        const body = await response.text();
+        let response = null;
+        let body = ''; 
+        if(DEBUG_MODE) {
+            body = fs.readFileSync('./data.json', 'utf8');
+        } else {
+            response = await fetch('https://www.purpleair.com/data.json');
+            body = await response.text();
+        }
+
         let json;
         try {
             json = JSON.parse(body);
         } catch (e) {
-            console.error('Failed to parse JSON response from purpleair', response.status, body.slice(0, 1000));
+            console.error('Failed to parse JSON response from purpleair', 
+            (response != null ? response.status: ''), body.slice(0, 1000));
             console.error('Parsing error', e)
             return -1;
         }
@@ -132,6 +144,10 @@ const AQI = (pm25) => {
     return 501; //  "Beyond the AQI"
 }
 
+const get_pm25_10m = (data) => {
+    return JSON.parse(data.Stats).v1;
+}
+
 const sensor_pm25 = (data) => {
     if (data.AGE > MAX_AGE) {
         console.log('Skipping channel "%s" for not reporting data for %d minutes', data.Label, data.AGE);
@@ -146,10 +162,8 @@ const sensor_pm25 = (data) => {
     }
 
     //TODO: we may also want to check if data.Stats.v or data.Stats.pm are different from data.PM2_5Value (it is not suppose to be)
-    const stats = JSON.parse(data.Stats);
-    // console.log('Sensor stats: ', stats);
 
-    return stats.v1; // getting 10 minutes averages
+    return get_pm25_10m(data); // getting 10 minutes averages
 }
 
 module.exports.value = async(lat, lon, correction = Correction.NONE) => {
@@ -190,7 +204,7 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
             return -1;
         }
 
-        const sensors_list = outliers.filter_outliers(json.results, (i) => parseFloat(i.PM2_5Value));
+        const sensors_list = outliers.filter_outliers(json.results, (i) => get_pm25_10m(i));
 
         // console.log("Before: " + sensors.length*2);
         // console.log("without outliers: " + sensors_list.length);

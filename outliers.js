@@ -14,8 +14,10 @@ module.exports.filter_outliers = (array, fn) => {
     const m = mean(array, fn);
 
     if(isNaN(m)) {
+        // console.log(array);
         for (i in array) {
             console.log(fn(i));
+            console.log(i);
         }
     }
 

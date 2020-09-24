@@ -126,6 +126,7 @@ body.no-backgrounds {
     position: absolute;
     bottom: 0;
     padding: 0;
+    padding-bottom: 20px;
 }
 
 .buttons {
