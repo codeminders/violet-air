@@ -10,7 +10,7 @@ const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 module.exports.get = async(conv, options = {}) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
-    const correction = conv.user.storage.smoke_correction ? "EPA" : "NONE";
+    const correction = preferences.get(conv).smoke_correction ? "EPA" : "NONE";
     // const value = 441;
     const value = await sensors.value(coordinates.latitude, coordinates.longitude, correction);
     if (value == -1) {
