@@ -156,18 +156,22 @@ button {
 
 .location {
     margin: 5px 20px 5px 5px;
-    text-indent: -9999px;
-    width: 46px !important;
 }
 
-.location .icon {
-    mask: url('../images/marker.svg') no-repeat;
-    -webkit-mask: url('../images/marker.svg') no-repeat;
-    mask-size: 20px auto;
-    -webkit-mask-size: 20px auto;
-    background-color: #fff;
-    mask-position: center;
-    -webkit-mask-position: center;
+@media (orientation: portrait) {
+    .location {
+        text-indent: -9999px;
+        width: 46px !important;
+    }
+    .location .icon {
+        mask: url('../images/marker.svg') no-repeat;
+        -webkit-mask: url('../images/marker.svg') no-repeat;
+        mask-size: 20px auto;
+        -webkit-mask-size: 20px auto;
+        background-color: #fff;
+        mask-position: center;
+        -webkit-mask-position: center;
+    }
 }
 
 .clean .buttons button,
