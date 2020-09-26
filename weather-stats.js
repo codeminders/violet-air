@@ -32,7 +32,10 @@ module.exports.get = async(conv, options = {}) => {
         if (options.feedback) {
             conv.add(options.feedback);
         }
+
         conv.add(prefix(value) + bucket.voice);
+        const s = prefs.smoke_correction ? 'off' : 'on';
+        conv.add('You can ask me to update location or turn ' + s + ' smoke correction.');
         if (conv.surface.capabilities.has('actions.capability.INTERACTIVE_CANVAS')) {
             return await conv.add(new df.HtmlResponse({
                 url: 'https://' + conv.headers.host + '/google-assistant/index.html',
