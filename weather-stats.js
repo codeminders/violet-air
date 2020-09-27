@@ -5,6 +5,8 @@ const buckets = require('./aqi_buckets');
 const suggestions = require('./suggestion-chips');
 const preferences = require('./preferences');
 
+const USE_CARDS = false;
+
 const prefix = (v) => 'The Air Quality Index is ' + v + '. '
 
 module.exports.get = async(conv, options = {}) => {
@@ -50,19 +52,21 @@ module.exports.get = async(conv, options = {}) => {
                 }
             }));
         } else if (conv.screen) {
-            const card = new df.BasicCard({
-                title: value,
-                subtitle: bucket.title,
-                text: prefix(value) + bucket.voice
-            });
-            if (bucket.background_path) {
-                const image = new df.Image({
-                    url: 'https://' + conv.headers.host + '/google-assistant/images/' + bucket.background_path,
-                    alt: bucket.title
+            if(USE_CARDS) {
+                const card = new df.BasicCard({
+                    title: value,
+                    subtitle: bucket.title,
+                    text: prefix(value) + bucket.voice
                 });
-                card.image = image;
+                if (bucket.background_path) {
+                    const image = new df.Image({
+                        url: 'https://' + conv.headers.host + '/google-assistant/images/' + bucket.background_path,
+                        alt: bucket.title
+                    });
+                    card.image = image;
+                }
+                conv.ask(card);
             }
-            conv.ask(card);
             if (chips.length) {
                 conv.ask(new df.Suggestions(suggestions.standard(chips)));
             }
