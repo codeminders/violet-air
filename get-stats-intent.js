@@ -8,7 +8,8 @@ const is_phone = (conv) => conv.surface.capabilities.has('actions.capability.WEB
 
 const need_location = (conv) => {
     return !conv.user.storage.coords ||
-        (is_phone(conv) && Date.now() - conv.user.storage.coords_ts > LOCATION_EXPIRATION);
+        (is_phone(conv) && Date.now() - conv.user.storage.coords_ts >
+            (conv.user.storage.coords_ttl || LOCATION_EXPIRATION));
 }
 
 module.exports = async(conv, options = {}) => {
