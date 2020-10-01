@@ -19,14 +19,14 @@ const MAX_AGE = 10; // filer out sensors not reporting data for X minutes
 let cache = [];
 let last_update_ts = 0;
 
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 
 const load = async() => {
     console.log('refreshing list of sensors');
     try {
         let response = null;
-        let body = ''; 
-        if(DEBUG_MODE) {
+        let body = '';
+        if (DEBUG_MODE) {
             body = fs.readFileSync('./data.json', 'utf8');
         } else {
             response = await fetch('https://www.purpleair.com/data.json');
@@ -37,13 +37,13 @@ const load = async() => {
         try {
             json = JSON.parse(body);
         } catch (e) {
-            console.error('Failed to parse JSON response from purpleair', 
-            (response != null ? response.status: ''), body.slice(0, 1000));
+            console.error('Failed to parse JSON response from purpleair',
+                (response != null ? response.status : ''), body.slice(0, 1000));
             console.error('Parsing error', e)
             return -1;
         }
 
-        if(json.data === undefined) {
+        if (json.data === undefined) {
             console.error('Unexpected JSON from server.', body.slice(0, 200));
             return -1;
         }
@@ -82,17 +82,17 @@ const haversine = (lat1, lon1, lat2, lon2) => {
     return R * c; // in metres
 }
 
-const closests = async(lat, lon) => {
+module.exports.closests = async(lat, lon, use_max_distance = true) => {
     // TODO: refresh cache here
     if (cache.length == 0 || Date.now() - last_update_ts > LIST_REFRESH_RATE) {
         const status = await load();
-        if(status < 0) 
+        if (status < 0)
             return null;
     }
     return cache.map(v => {
         return {...v, distance: haversine(v.lat, v.lon, lat, lon) }
     }).filter(v => {
-        return v.distance <= MAX_DISTANCE;
+        return !use_max_distance || v.distance <= MAX_DISTANCE;
     }).sort((a, b) => {
         return a.distance - b.distance;
     }).slice(0, NUM_SENSORS);
@@ -113,11 +113,11 @@ const LRAPA = (x) => Math.max(0.5 * x - 0.66, 0);
 // x - raw PM2.5 value
 // h - humidity
 // only apply for PM2.5 > 65
-const EPA = (x, h) => x < 65 ? x :Math.max(0.52*x - 0.085*h + 5.71, 0);
+const EPA = (x, h) => x < 65 ? x : Math.max(0.52 * x - 0.085 * h + 5.71, 0);
 
 //AQandU correction https://www.aqandu.org/airu_sensor#calibrationSection
 // PM2.5 (µg/m³) = 0.778 x PA + 2.65
-const AQandU = (x) => 0.778*x + 2.65;
+const AQandU = (x) => 0.778 * x + 2.65;
 
 // Calculate AQI for PM2.5.
 // https://www3.epa.gov/airnow/aqi-technical-assistance-document-sept2018.pdf
@@ -170,15 +170,15 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
     let t = 0;
     let n = 0;
     let dt = 0;
-    const sensors = await closests(lat, lon);
-    if(sensors == null) {
+    const sensors = await module.exports.closests(lat, lon);
+    if (sensors == null) {
         return -1;
     }
     if (!sensors.length) {
         console.log('No close sensors found for', lat, lon);
         return -2;
     }
-    // console.log('Closest sensors', lat, lon, sensors);
+    console.log('Closest sensors', lat, lon, sensors);
 
     const dict = sensors.reduce((result, s) => {
         result[s.id] = s;
@@ -189,18 +189,19 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
 
     try {
         let json;
+        const url = 'https://www.purpleair.com/json?show=' + query;
         try {
-            const response = await fetch('https://www.purpleair.com/json?show=' + query);
+            const response = await fetch(url);
             const body = await response.text();
             try {
                 json = JSON.parse(body);
-                // console.log('JSON data', json);
+                console.log('JSON data', json);
             } catch (e) {
-                console.error('Failed to obtain JSON response from purpleair', response.status, body);
+                console.error('Failed to obtain JSON response from purpleair', url, response.status, body);
                 return -1;
             }
         } catch (e) {
-            console.error('Failed to obtain response from purple air', e);
+            console.error('Failed to obtain response from purple air', url, e);
             return -1;
         }
 
@@ -217,11 +218,11 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
                 // Look up original sensor from the sensor list
                 const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
 
-                if(sensor_json.humidity !== undefined)
+                if (sensor_json.humidity !== undefined)
                     humidity = sensor_json.humidity;
 
                 let v = 0;
-                switch(correction) {
+                switch (correction) {
                     case Correction.NONE:
                         v = raw_pm25;
                         break;
