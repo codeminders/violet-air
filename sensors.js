@@ -178,7 +178,7 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
         console.log('No close sensors found for', lat, lon);
         return -2;
     }
-    console.log('Closest sensors', lat, lon, sensors);
+    // console.log('Closest sensors', lat, lon, sensors);
 
     const dict = sensors.reduce((result, s) => {
         result[s.id] = s;
@@ -195,7 +195,7 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
             const body = await response.text();
             try {
                 json = JSON.parse(body);
-                console.log('JSON data', json);
+                // console.log('JSON data', json);
             } catch (e) {
                 console.error('Failed to obtain JSON response from purpleair', url, response.status, body);
                 return -1;

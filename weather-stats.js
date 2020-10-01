@@ -50,8 +50,17 @@ module.exports.get = async(conv, options = {}) => {
         if (!closest) {
             return;
         }
-        console.log('?', await geocoder(closest.sensor.lat, closest.sensor.lon));
-        conv.add('No Purple Air sensors around you found. The closest sensor is in {CITY NAME}. The AQI at that location is ' + closest.value);
+        const locality = await geocoder(closest.sensor.lat, closest.sensor.lon);
+        const distance_km = (closest.sensor.distance / 1000.0).toFixed(1);
+        const distance_m = (distance_km * 0.621371).toFixed(1);
+        const distance = ' in ' + distance_m + ' miles (' + distance_km + ' km)';
+        if (locality) {
+            conv.add('No Purple Air sensors around you found. The closest sensor is in ' +
+                locality + distance + '. The AQI at that location is ' + closest.value);
+        } else {
+            conv.add('No Purple Air sensors around you found. The closest sensor is ' +
+                distance + '. The AQI at that location is ' + closest.value);
+        }
     } else {
         const bucket = buckets.get_bucket(value);
         conv.add(prefix(value) + bucket.voice);

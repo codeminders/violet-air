@@ -15,7 +15,6 @@ module.exports = async(lat, lng) => {
             return null;
         }
         const data = result.json.results[0];
-        console.log(data);
         for (const address_component of data.address_components) {
             for (const t of address_component.types) {
                 if (t == 'locality') {
@@ -24,7 +23,7 @@ module.exports = async(lat, lng) => {
             }
         }
     } catch (e) {
-        logger.info('Failed geolocation', components, e);
+        logger.info('Failed geolocation', lat, lng, e);
     }
     return null;
 };
