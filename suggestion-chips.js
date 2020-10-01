@@ -19,3 +19,8 @@ module.exports.standard = (items) => {
         return v.text;
     });
 }
+
+module.exports.phrase = (conv) => {
+    const s = preferences.get(conv).smoke_correction ? 'off' : 'on';
+    return 'You can ask me to update location, remember location or turn ' + s + ' smoke correction.';
+}

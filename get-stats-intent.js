@@ -14,7 +14,7 @@ const need_location = (conv) => {
 
 module.exports = async(conv, options = {}) => {
     if (conv.user.verification !== 'VERIFIED') {
-        return await conv.close('Sorry, we can\'t obtain location for guest users');
+        return await conv.close('Sorry, we can\'t obtain location for guest users.');
     }
 
     if (need_location(conv)) {
