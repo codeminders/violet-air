@@ -8,7 +8,7 @@ module.exports = async() => {
     dialogflow.intent('Default Fallback Intent', async(conv) => {
         const prefs = preferences.get(conv);
         const s = prefs.smoke_correction ? 'off' : 'on';
-        conv.add('Sorry, I did not get that. You can ask me to update location or turn ' + s + ' smoke correction.');
+        conv.add('Sorry, I did not get that. You can ask me to update location, remember location, or turn ' + s + ' smoke correction.');
         const chips = suggestions.chips(conv);
         if (!conv.screen) {
             return;
