@@ -12,7 +12,8 @@ const meters_to_miles = (m) => 1609.34 * m
 module.exports.get = async(conv, options = {}) => {
     const location = conv.device.location || conv.user.storage.coords;
     const coordinates = location.coordinates;
-    const correction = preferences.get(conv).smoke_correction ? "EPA" : "NONE";
+    const prefs = preferences.get(conv);
+    const correction = prefs.smoke_correction ? 'EPA' : 'NONE';
 
     // const value = 441;
     const res = await sensors.value(coordinates.latitude, coordinates.longitude, correction);
@@ -21,7 +22,12 @@ module.exports.get = async(conv, options = {}) => {
         return conv.close('Oops... Cannot get the air quality data from Purple Air');
     }
 
+    const bucket = buckets.get_bucket(res.value);
+
     if (!res.found) {
+        if (prefs.brief) {
+            return conv.close('The closest sensor reports ' + res.value + ' (' + bucket.color_code + ')');
+        }
         let message = 'There are no Purple Air sensors close to your location.';
         const geo = await geocoder(res.closest.lat, res.closest.lon);
         if (geo) {
@@ -48,7 +54,10 @@ module.exports.get = async(conv, options = {}) => {
         return conv.close('Learn more about PurpleAir sensors at PurpleAir.com');
     }
 
-    const bucket = buckets.get_bucket(res.value);
+    if (prefs.brief) {
+        return conv.close('The Air Quality level is ' + res.value + ' (' + bucket.color_code + ')');
+    }
+
     if (options.feedback) {
         conv.add(options.feedback);
     }
