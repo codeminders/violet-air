@@ -28,7 +28,7 @@
     "scripts": {
         "server": "forever -w index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "docker build -t codeminders/violet-air .",
+	"build": "google_maps_api_key=${google_maps_api_key:?Must provide google_maps_api_key.} docker build --build-arg google_maps_api_key=${google_maps_api_key}  -t codeminders/violet-air .",
         "start": "docker run -p 8081:80 --name violet-air-app -d codeminders/violet-air",
         "stop": "docker rm --force violet-air-app"
     }
