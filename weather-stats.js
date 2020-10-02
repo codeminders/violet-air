@@ -53,7 +53,15 @@ module.exports.get = async(conv, options = {}) => {
         conv.add(options.feedback);
     }
 
-    conv.add('The Air Quality level is "' + bucket.color_code + '" with an index of ' + res.value + '. ' + bucket.voice);
-
-    conv.close(suggestions.phrase(conv));
+    const hints = suggestions.phrase(conv);
+    const fn = hints ? conv.add : conv.close;
+    fn.call(conv,
+        'The Air Quality level is "' +
+        bucket.color_code +
+        '" with an index of ' +
+        res.value + '. ' +
+        bucket.voice);
+    if (hints) {
+        conv.close(hints);
+    }
 }
