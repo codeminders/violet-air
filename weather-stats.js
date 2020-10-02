@@ -47,7 +47,7 @@ module.exports.get = async(conv, options = {}) => {
 
         if (conv.screen && conv.surface.capabilities.has('actions.capability.WEB_BROWSER')) {
             conv.ask(new df.LinkOutSuggestion({
-                name: 'Learn more about PurpleAir',
+                name: 'PurpleAir.com',
                 url: 'https://www.purpleair.com/',
             }));
         }
@@ -55,7 +55,7 @@ module.exports.get = async(conv, options = {}) => {
     }
 
     if (prefs.brief) {
-        return conv.close('The Air Quality level is ' + res.value + ' (' + bucket.color_code + ')');
+        return conv.close('The Air Quality Index is ' + res.value + ' Level "' + bucket.color_code + '"');
     }
 
     if (options.feedback) {

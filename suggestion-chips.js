@@ -35,5 +35,5 @@ module.exports.phrase = (conv) => {
         return null;
     }
     const s = preferences.get(conv).smoke_correction ? 'off' : 'on';
-    return 'You can ask me to update location, remember location, enable brief mode or turn ' + s + ' smoke correction.';
+    return 'By the way, you can ask me to update or remember location, enable brief mode, or turn ' + s + ' smoke correction.';
 }
