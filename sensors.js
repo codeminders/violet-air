@@ -25,8 +25,8 @@ const load = async() => {
     console.log('refreshing list of sensors');
     try {
         let response = null;
-        let body = ''; 
-        if(DEBUG_MODE) {
+        let body = '';
+        if (DEBUG_MODE) {
             body = fs.readFileSync('./data.json', 'utf8');
         } else {
             response = await fetch('https://www.purpleair.com/data.json');
@@ -37,13 +37,13 @@ const load = async() => {
         try {
             json = JSON.parse(body);
         } catch (e) {
-            console.error('Failed to parse JSON response from purpleair', 
-            (response != null ? response.status: ''), body.slice(0, 1000));
+            console.error('Failed to parse JSON response from purpleair',
+                (response != null ? response.status : ''), body.slice(0, 1000));
             console.error('Parsing error', e)
             return -1;
         }
 
-        if(json.data === undefined) {
+        if (json.data === undefined) {
             console.error('Unexpected JSON from server.', body.slice(0, 200));
             return -1;
         }
@@ -86,7 +86,7 @@ const closests = async(lat, lon) => {
     // TODO: refresh cache here
     if (cache.length == 0 || Date.now() - last_update_ts > LIST_REFRESH_RATE) {
         const status = await load();
-        if(status < 0) 
+        if (status < 0)
             return null;
     }
 
@@ -105,9 +105,9 @@ const closests = async(lat, lon) => {
     });
 
     if (within_radius.length) {
-        return {found: true,  sensors: within_radius};
+        return { found: true, sensors: within_radius };
     } else {
-        return {found: false, sensors: closeset_n};
+        return { found: false, sensors: closeset_n };
     }
 }
 
@@ -188,16 +188,16 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
     let dt = 0;
 
     const res = await closests(lat, lon);
-    if(res == null) {
+    if (res == null) {
         return ERROR; // Catastrofic error. No data from PA
     }
 
-    let sensors = res.sensors;
+    const sensors = res.sensors;
 
     if (res.found) {
         console.log('Closest sensors', lat, lon, sensors);
     } else {
-        console.log('No sensors within ' + (MAX_DISTANCE/1000) + ' km. Using the closeset one', lat, lon, sensors);
+        console.log('No sensors within ' + (MAX_DISTANCE / 1000) + ' km. Using the closeset one', lat, lon, sensors);
     }
 
     const dict = sensors.reduce((result, s) => {
@@ -245,11 +245,11 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
             // Look up original sensor from the sensor list
             const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
 
-            if(sensor_json.humidity !== undefined)
+            if (sensor_json.humidity !== undefined)
                 humidity = sensor_json.humidity;
 
             let v = 0;
-            switch(correction) {
+            switch (correction) {
                 case Correction.NONE:
                     v = raw_pm25;
                     break;
@@ -275,11 +275,11 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
 
             // if there are no sensors within MAX_DISTANCE we are using only the closest one with valid PM25 readings 
             if (!res.found) {
-                return { value: Math.round(AQI(v)), found: false, distance: sensor.distance, sensor_name: sensor.label  };
+                return { value: Math.round(AQI(v)), found: false, closest: sensor };
             }
         }
 
-        return { value: Math.round(AQI(t / (Math.max(dt, 1) * 1.0))), found: true};
+        return { value: Math.round(AQI(t / (Math.max(dt, 1) * 1.0))), found: true };
 
     } catch (e) {
         console.error('Failed to load PurpleAir data', e);
@@ -293,4 +293,3 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
     // console.log(await module.exports.value(37.416682, -122.103521, Correction.EPA));
     // console.log(await module.exports.value(36.131075, -124.278348, Correction.EPA));
 })();
-
