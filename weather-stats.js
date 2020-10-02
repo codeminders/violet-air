@@ -42,10 +42,8 @@ module.exports.get = async(conv, options = {}) => {
         conv.add(options.feedback);
     }
 
-    let message = 'The Air Quality Index is ' + res.value + '. ';
-    message += 'The AQI color is ' + bucket.color_code + '. ';
-    message += bucket.voice;
+    conv.add('The Air Quality level is "' + bucket.color_code + '"" with an index of ' + res.value + '. ');
+    conv.add(bucket.voice);
 
-    conv.add(message);
     conv.close(suggestions.phrase(conv));
 }
