@@ -22,7 +22,7 @@ module.exports.get = async(conv, options = {}) => {
 
     if (!res.found) {
         let message = 'There are no Purple Air sensors close to your location.';
-        message += ' The closest sensor we found is ' + Math.round(meters_to_miles(res.distance)) + 'miles from you';
+        message += ' The closest sensor we found is ' + Math.round(meters_to_miles(res.distance)) + 'miles from you.';
         //TODO: add name of the sensor and city name
         message += 'Its Air Quality Index is ' + value;
         conv.add(message);
@@ -42,8 +42,7 @@ module.exports.get = async(conv, options = {}) => {
         conv.add(options.feedback);
     }
 
-    conv.add('The Air Quality level is "' + bucket.color_code + '"" with an index of ' + res.value + '. ');
-    conv.add(bucket.voice);
+    conv.add('The Air Quality level is "' + bucket.color_code + '" with an index of ' + res.value + '. ' + bucket.voice);
 
     conv.close(suggestions.phrase(conv));
 }
