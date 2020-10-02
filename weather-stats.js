@@ -5,7 +5,8 @@ const buckets = require('./aqi_buckets');
 const suggestions = require('./suggestion-chips');
 const preferences = require('./preferences');
 
-const prefix = (v) => 'The Air Quality Index is ' + v + '. '
+//TODO: can we find out if user wants to use miles vs km?
+const meters_to_miles = (m) => 1609.34 * m
 
 module.exports.get = async(conv, options = {}) => {
     const location = conv.device.location || conv.user.storage.coords;
@@ -13,29 +14,38 @@ module.exports.get = async(conv, options = {}) => {
     const correction = preferences.get(conv).smoke_correction ? "EPA" : "NONE";
     
     // const value = 441;
-    const value = await sensors.value(coordinates.latitude, coordinates.longitude, correction);
+    const res = await sensors.value(coordinates.latitude, coordinates.longitude, correction);
 
-    if (value == -1) {
+    if (res.value == -1) {
         return conv.close('Oops... Cannot get the air quality data from Purple Air');
     }
 
-    if (value == -2) {
-        const message = 'No Purle Air sensors found close to you.'
+    if (!res.found) {
+        let message = 'There are no Purple Air sensors close to your location.';
+        message += ' The closest sensor we found is ' + Math.round(meters_to_miles(res.distance)) + 'miles from you';
+        //TODO: add name of the sensor and city name
+        message += 'Its Air Quality Index is ' + value;
+        conv.add(message);
+
         if (conv.screen && conv.surface.capabilities.has('actions.capability.WEB_BROWSER')) {
             conv.ask(new df.LinkOutSuggestion({
-                name: 'PurpleAir.com',
+                name: 'Learn more about PurpleAir',
                 url: 'https://www.purpleair.com/',
             }));
         }
-        return conv.close(message);
+        return conv.close('Learn more about PurpleAir sensors at PurpleAir.com');
     }
     
-    const bucket = buckets.get_bucket(value);
+    const bucket = buckets.get_bucket(res.value);
     const chips = suggestions.chips(conv);
     if (options.feedback) {
         conv.add(options.feedback);
     }
 
-    conv.add(prefix(value) + bucket.voice);
+    let message = 'The Air Quality Index is ' + res.value + '. ';
+    message += 'The AQI color is ' + bucket.color_code + '. ';
+    message += bucket.voice;
+
+    conv.add(message);
     conv.close(suggestions.phrase(conv));
 }

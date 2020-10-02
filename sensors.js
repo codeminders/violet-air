@@ -19,7 +19,7 @@ const MAX_AGE = 10; // filer out sensors not reporting data for X minutes
 let cache = [];
 let last_update_ts = 0;
 
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 
 const load = async() => {
     console.log('refreshing list of sensors');
@@ -89,13 +89,26 @@ const closests = async(lat, lon) => {
         if(status < 0) 
             return null;
     }
-    return cache.map(v => {
+
+    const closeset_n = cache.map(v => {
         return {...v, distance: haversine(v.lat, v.lon, lat, lon) }
-    }).filter(v => {
-        return v.distance <= MAX_DISTANCE;
     }).sort((a, b) => {
         return a.distance - b.distance;
     }).slice(0, NUM_SENSORS);
+
+    if (closeset_n.length == 0) {
+        return null;
+    }
+
+    const within_radius = closeset_n.filter(v => {
+        return v.distance <= MAX_DISTANCE;
+    });
+
+    if (within_radius.length) {
+        return {found: true,  sensors: within_radius};
+    } else {
+        return {found: false, sensors: closeset_n};
+    }
 }
 
 const Correction = {
@@ -113,11 +126,11 @@ const LRAPA = (x) => Math.max(0.5 * x - 0.66, 0);
 // x - raw PM2.5 value
 // h - humidity
 // only apply for PM2.5 > 65
-const EPA = (x, h) => x < 65 ? x :Math.max(0.52*x - 0.085*h + 5.71, 0);
+const EPA = (x, h) => x < 65 ? x : Math.max(0.52 * x - 0.085 * h + 5.71, 0);
 
 //AQandU correction https://www.aqandu.org/airu_sensor#calibrationSection
 // PM2.5 (µg/m³) = 0.778 x PA + 2.65
-const AQandU = (x) => 0.778*x + 2.65;
+const AQandU = (x) => 0.778 * x + 2.65;
 
 // Calculate AQI for PM2.5.
 // https://www3.epa.gov/airnow/aqi-technical-assistance-document-sept2018.pdf
@@ -167,18 +180,25 @@ const sensor_pm25 = (data) => {
 }
 
 module.exports.value = async(lat, lon, correction = Correction.NONE) => {
+
+    const ERROR = { value: -1, found: false };
+
     let t = 0;
     let n = 0;
     let dt = 0;
-    const sensors = await closests(lat, lon);
-    if(sensors == null) {
-        return -1;
+
+    const res = await closests(lat, lon);
+    if(res == null) {
+        return ERROR; // Catastrofic error. No data from PA
     }
-    if (!sensors.length) {
-        console.log('No close sensors found for', lat, lon);
-        return -2;
+
+    let sensors = res.sensors;
+
+    if (res.found) {
+        console.log('Closest sensors', lat, lon, sensors);
+    } else {
+        console.log('No sensors within ' + (MAX_DISTANCE/1000) + ' km. Using the closeset one', lat, lon, sensors);
     }
-    // console.log('Closest sensors', lat, lon, sensors);
 
     const dict = sensors.reduce((result, s) => {
         result[s.id] = s;
@@ -197,66 +217,80 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
                 // console.log('JSON data', json);
             } catch (e) {
                 console.error('Failed to obtain JSON response from purpleair', response.status, body);
-                return -1;
+                return ERROR;
             }
         } catch (e) {
             console.error('Failed to obtain response from purple air', e);
-            return -1;
+            return ERROR;
         }
 
-        const sensors_list = outliers.filter_outliers(json.results, (i) => get_pm25_10m(i));
+        // filter out all sensors with invalid reading first
+        let sensors_list = json.results.filter((v => {
+            return sensor_pm25(v) >= 0;
+        }));
 
-        // console.log("Before: " + sensors.length*2);
-        // console.log("without outliers: " + sensors_list.length);
+        // only filer out outiers if we close sensors were found
+        if (res.found) {
+            sensors_list = outliers.filter_outliers(sensors_list, (i) => get_pm25_10m(i));
+        } else {
+            // if no close sensors, we need to leave JSON results from the closest sensor
+            //TODO: either sort of just leave the closest one in sensors_list
+            //TODO: !!!!
+        }
 
         let n = 0;
         let humidity = 0; // this is an ugly hack. we reuse the last known humidity because it is only repoted on A channel, but not on B channel
         for (const sensor_json of sensors_list) {
             const raw_pm25 = sensor_pm25(sensor_json);
-            if (raw_pm25 >= 0) {
-                // Look up original sensor from the sensor list
-                const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
+            // Look up original sensor from the sensor list
+            const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
 
-                if(sensor_json.humidity !== undefined)
-                    humidity = sensor_json.humidity;
+            if(sensor_json.humidity !== undefined)
+                humidity = sensor_json.humidity;
 
-                let v = 0;
-                switch(correction) {
-                    case Correction.NONE:
-                        v = raw_pm25;
-                        break;
-                    case Correction.LRAPA:
-                        v = LRAPA(raw_pm25);
-                        break;
-                    case Correction.EPA:
-                        v = EPA(raw_pm25, humidity);
-                        break;
-                    case Correction.AQandU:
-                        v = AQandU(raw_pm25);
-                        break;
-                }
+            let v = 0;
+            switch(correction) {
+                case Correction.NONE:
+                    v = raw_pm25;
+                    break;
+                case Correction.LRAPA:
+                    v = LRAPA(raw_pm25);
+                    break;
+                case Correction.EPA:
+                    v = EPA(raw_pm25, humidity);
+                    break;
+                case Correction.AQandU:
+                    v = AQandU(raw_pm25);
+                    break;
+            }
 
-                console.log('"%s" PA (PM2.5: %d AQI: %d) %s (PM2.5: %d AQI: %d)',
-                    sensor_json.Label, raw_pm25, AQI(raw_pm25), correction, v, AQI(v));
+            console.log('"%s" PA (PM2.5: %d AQI: %d) %s (PM2.5: %d AQI: %d)',
+                sensor_json.Label, raw_pm25, AQI(raw_pm25), correction, v, AQI(v));
 
-                const d = MAX_DISTANCE - sensor.distance;
+            const d = MAX_DISTANCE - sensor.distance;
 
-                dt += d;
-                t += v * d;
-                n += 1;
+            dt += d;
+            t += v * d;
+            n += 1;
+
+            // if there are no sensors within MAX_DISTANCE we are using only the closest one with valid PM25 readings 
+            if (!res.found) {
+                return { value: Math.round(AQI(v)), found: false, distance: sensor.distance, sensor_name: sensor.label  };
             }
         }
 
-        return Math.round(AQI(t / (Math.max(dt, 1) * 1.0)));
+        return { value: Math.round(AQI(t / (Math.max(dt, 1) * 1.0))), found: true};
 
     } catch (e) {
         console.error('Failed to load PurpleAir data', e);
-        return -1;
+        return ERROR;
     }
 }
 
-// (async() => {
-//     //
-//     // console.log(await module.exports.value(37.846336, -122.26603, Correction.NONE));
-//     console.log(await module.exports.value(37.416682, -122.103521, Correction.EPA));
-// })();
+(async() => {
+    //
+    // console.log(await module.exports.value(37.846336, -122.26603, Correction.NONE));
+    // console.log(await module.exports.value(37.416682, -122.103521, Correction.EPA));
+    // console.log(await module.exports.value(36.131075, -124.278348, Correction.EPA));
+})();
+
