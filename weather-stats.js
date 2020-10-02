@@ -55,7 +55,7 @@ module.exports.get = async(conv, options = {}) => {
     }
 
     if (prefs.brief) {
-        return conv.close('The Air Quality Index is ' + res.value + ' Level "' + bucket.color_code + '"');
+        return conv.close('The Air Quality Index is ' + res.value + '. The level is "' + bucket.color_code + '"');
     }
 
     if (options.feedback) {
