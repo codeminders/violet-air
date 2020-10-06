@@ -126,7 +126,7 @@ const LRAPA = (x) => Math.max(0.5 * x - 0.66, 0);
 // x - raw PM2.5 value
 // h - humidity
 // only apply for PM2.5 > 65
-const EPA = (x, h) => x < 65 ? x : Math.max(0.52 * x - 0.085 * h + 5.71, 0);
+const EPA = (x, h) => Math.max(0.52 * x - 0.085 * h + 5.71, 0);
 
 //AQandU correction https://www.aqandu.org/airu_sensor#calibrationSection
 // PM2.5 (µg/m³) = 0.778 x PA + 2.65
@@ -158,7 +158,13 @@ const AQI = (pm25) => {
 }
 
 const get_pm25_10m = (data) => {
-    return JSON.parse(data.Stats).v1;
+    try {
+        return JSON.parse(data.Stats).v1;
+    } catch(e) {
+        console.error('Error parsing Stats JSON for ' + data.ID);
+        console.error('JSON: ' + data.Stats);
+        throw e;
+    }
 }
 
 const sensor_pm25 = (data) => {
@@ -206,6 +212,7 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
     }, {});
 
     const query = sensors.map(v => v.id).join('|');
+    console.log('Query: ' + query);
 
     try {
         let json;
@@ -224,8 +231,11 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
             return ERROR;
         }
 
-        // filter out all sensors with invalid reading first
+        // filter out all sensors with invalid JSON first
+        // then filter out all sensors with invalid reading
         let sensors_list = json.results.filter((v => {
+            return 'Stats' in v; // has 'Stats' field in its JSON 
+        })).filter((v => {
             return sensor_pm25(v) >= 0;
         }));
 

@@ -23,7 +23,7 @@ const buckets = [{
         level: 'not-perfect',
         color_code: 'Orange', 
         title: 'Unhealthy for Sensitive Groups',
-        voice: 'This is not so good.'
+        voice: 'This is not very good.'
     },
     {
         min: 151,

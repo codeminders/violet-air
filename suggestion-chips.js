@@ -9,6 +9,7 @@ module.exports.chips = (conv) => {
     if (conv.surface.capabilities.has('actions.capability.INTERACTIVE_CANVAS'))
         ret.push('Images ' + (prefs.backgrounds ? 'Off' : 'On'));
     ret.push({ classname: 'location', text: 'Update location' });
+    ret.push('Remember location');
 
     return ret;
 }

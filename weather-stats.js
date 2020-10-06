@@ -54,12 +54,12 @@ module.exports.get = async(conv, options = {}) => {
         return conv.close('Learn more about PurpleAir sensors at PurpleAir.com');
     }
 
-    if (prefs.brief) {
-        return conv.close('The Air Quality Index is ' + res.value + '. The level is "' + bucket.color_code + '"');
-    }
-
     if (options.feedback) {
         conv.add(options.feedback);
+    }
+
+    if (prefs.brief) {
+        return conv.close('The Air Quality Index is ' + res.value + '. The level is "' + bucket.color_code + '"');
     }
 
     const hints = suggestions.phrase(conv);
@@ -70,7 +70,12 @@ module.exports.get = async(conv, options = {}) => {
         '" with an index of ' +
         res.value + '. ' +
         bucket.voice);
+
     if (hints) {
-        conv.close(hints);
+        conv.ask(hints);
+        const chips = suggestions.chips(conv);
+        if (conv.screen && chips.length) {
+            conv.ask(new df.Suggestions(suggestions.standard(chips)));
+        }
     }
 }
