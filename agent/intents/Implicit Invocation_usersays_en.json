@@ -1,0 +1,198 @@
+[
+  {
+    "id": "e7482308-2d7c-4b59-83f6-32a5f631b1e7",
+    "data": [
+      {
+        "text": "air quality",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "a0c0745b-6436-482f-857f-fc6290371ffd",
+    "data": [
+      {
+        "text": "AQI number",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "bba60ba6-0205-4525-8179-a4c71249c007",
+    "data": [
+      {
+        "text": "what is the local AQI number?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "08214873-ee10-4b39-a76b-f6842f3e7965",
+    "data": [
+      {
+        "text": "air quality here",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "b82be77d-9510-4e71-b6bb-06fc098eeb8a",
+    "data": [
+      {
+        "text": "local air quality",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "64f45d62-240f-4baf-80bc-57da5bd3fbf6",
+    "data": [
+      {
+        "text": "air quality around me",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "38ce01d9-865a-437c-a7f4-a18ec94de37c",
+    "data": [
+      {
+        "text": "realtime air quality",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "79a8d5c4-d073-40dd-893b-55a1030c3558",
+    "data": [
+      {
+        "text": "air quality on ",
+        "userDefined": false
+      },
+      {
+        "text": "Purple",
+        "meta": "@sys.ignore",
+        "userDefined": false
+      },
+      {
+        "text": " Air",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "f47a6c10-6896-4d98-b396-e8dd996a2602",
+    "data": [
+      {
+        "text": "air quality on ",
+        "userDefined": false
+      },
+      {
+        "text": "PurpleAir",
+        "meta": "@sys.ignore",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "0bbbee6a-8aeb-4e0f-8ce0-da6ef7efcb51",
+    "data": [
+      {
+        "text": "what is air quality?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "e694f59a-e604-4bca-8088-3bdc8e910c46",
+    "data": [
+      {
+        "text": "is air clean?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "9fae7532-1797-4909-8b75-dc1357857894",
+    "data": [
+      {
+        "text": "is air clean now?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "ec8640a9-73e3-4fbd-8cb5-260df23e9e2c",
+    "data": [
+      {
+        "text": "how dirty is the air?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "cb73a20a-4f59-48ae-a8a3-bca095e3ae0a",
+    "data": [
+      {
+        "text": "how clean is the air?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

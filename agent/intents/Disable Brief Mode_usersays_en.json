@@ -1,0 +1,41 @@
+[
+  {
+    "id": "d8798786-98e3-4ddb-b8e4-1f3f87f2d10b",
+    "data": [
+      {
+        "text": "turn brief mode off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "ea6d8015-e28f-4217-9508-95a190a3d547",
+    "data": [
+      {
+        "text": "disable brief mode",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "7f290902-e031-44b1-9d7f-cb44a76f97b9",
+    "data": [
+      {
+        "text": "brief mode off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

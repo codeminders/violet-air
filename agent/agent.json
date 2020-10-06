@@ -1,0 +1,94 @@
+{
+  "description": "",
+  "language": "en",
+  "shortDescription": "",
+  "examples": "",
+  "linkToDocs": "",
+  "displayName": "violet-air",
+  "activeAssistantAgents": [
+    "smalltalk-domain-on"
+  ],
+  "disableInteractionLogs": false,
+  "disableStackdriverLogs": true,
+  "googleAssistant": {
+    "googleAssistantCompatible": true,
+    "project": "",
+    "welcomeIntentSignInRequired": false,
+    "startIntents": [
+      {
+        "intentId": "3f33ceaa-c2f1-4615-88f0-caeca06296fd",
+        "signInRequired": false
+      },
+      {
+        "intentId": "1209d883-4de3-4081-8a84-ef2b42f13fb0",
+        "signInRequired": false
+      },
+      {
+        "intentId": "33f2c5a4-35d6-4544-91e3-8c2e5eadb1df",
+        "signInRequired": false
+      },
+      {
+        "intentId": "3ad5bb61-192c-4860-82dc-ed04d1ed6568",
+        "signInRequired": false
+      },
+      {
+        "intentId": "af729e9c-f7c5-4949-b70b-985e91c39866",
+        "signInRequired": false
+      },
+      {
+        "intentId": "c03dcc85-1d8e-46bc-82f1-61bdb0d64cd0",
+        "signInRequired": false
+      },
+      {
+        "intentId": "0cce7864-de20-4456-8fcd-8de4ca29df55",
+        "signInRequired": false
+      },
+      {
+        "intentId": "05dd9efe-f183-47a1-a124-6cde8e402620",
+        "signInRequired": false
+      },
+      {
+        "intentId": "0f068d72-7d7d-4723-b46e-c1133ba0905c",
+        "signInRequired": false
+      }
+    ],
+    "systemIntents": [],
+    "endIntentIds": [],
+    "oAuthLinking": {
+      "required": false,
+      "providerId": "",
+      "authorizationUrl": "",
+      "tokenUrl": "",
+      "scopes": "",
+      "privacyPolicyUrl": "",
+      "grantType": "AUTH_CODE_GRANT"
+    },
+    "voiceType": "MALE_1",
+    "capabilities": [],
+    "env": "",
+    "protocolVersion": "V2",
+    "autoPreviewEnabled": false,
+    "isDeviceAgent": false
+  },
+  "defaultTimezone": "America/Los_Angeles",
+  "webhook": {
+    "url": "https://blanca.codeminders.com/google-assistant/webhook",
+    "username": "",
+    "headers": {},
+    "available": true,
+    "useForDomains": false,
+    "cloudFunctionsEnabled": false,
+    "cloudFunctionsInitialized": false
+  },
+  "isPrivate": true,
+  "mlMinConfidence": 0.3,
+  "supportedLanguages": [],
+  "enableOnePlatformApi": true,
+  "onePlatformApiVersion": "v2",
+  "secondaryKey": "e981cf28d16c49dcb07f2c38c384e9bf",
+  "analyzeQueryTextSentiment": false,
+  "enabledKnowledgeBaseNames": [],
+  "knowledgeServiceConfidenceAdjustment": 0.0,
+  "dialogBuilderMode": false,
+  "baseActionPackagesUrl": ""
+}

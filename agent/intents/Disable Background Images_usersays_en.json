@@ -1,0 +1,184 @@
+[
+  {
+    "id": "fe253936-827a-413a-a761-cafd3a047cd2",
+    "data": [
+      {
+        "text": "backgrounds off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "c1756cff-7ef6-4b16-bfe0-39083266097c",
+    "data": [
+      {
+        "text": "disable background",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "d3757fa7-8fb8-4d33-b3c3-1588457901a8",
+    "data": [
+      {
+        "text": "pictures off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "bcce9269-1638-4f16-8993-5c79385e7e84",
+    "data": [
+      {
+        "text": "images off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "2c230864-691b-4509-9145-51ccf8c2b7a8",
+    "data": [
+      {
+        "text": "turn images off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "bdf52c62-c6bf-4a5e-9e68-60a7b5e8e7c2",
+    "data": [
+      {
+        "text": "turn pictures off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "b00ba5ee-15f4-40b9-8abf-9eb72539877d",
+    "data": [
+      {
+        "text": "disable pictures",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "7306beef-dd8f-4905-b4a5-1342783f339b",
+    "data": [
+      {
+        "text": "disable images",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "63b374b1-7408-4509-84cf-86d1bea6e268",
+    "data": [
+      {
+        "text": "disable backround pictures",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "d409281b-2163-4ffc-b836-036dd4646da8",
+    "data": [
+      {
+        "text": "disable backround images",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "3f6d02f6-f3ae-46f8-aa6d-739bf93993b0",
+    "data": [
+      {
+        "text": "hide pictures",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "08834ce7-7bb2-4add-a7ef-f94456a90ade",
+    "data": [
+      {
+        "text": "hide images",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "71dd4096-a33d-499f-9398-b53b1cd9a2e5",
+    "data": [
+      {
+        "text": "hide backround pictures",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "dc050416-26a8-464e-b2af-1819bc1cb7f1",
+    "data": [
+      {
+        "text": "hide backround images",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

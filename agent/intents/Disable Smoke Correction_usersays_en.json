@@ -1,0 +1,132 @@
+[
+  {
+    "id": "ebc68b84-15f7-4fdb-b485-1095a6dd108a",
+    "data": [
+      {
+        "text": "smoke off",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "1288b2dc-0350-4530-ad89-019243076822",
+    "data": [
+      {
+        "text": "disable wildfires",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "04ed08e3-bfbf-405b-b3ba-30bc457c429e",
+    "data": [
+      {
+        "text": "turn off wildfires",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "e18b797c-59d5-4f04-9f8b-fa924eece12c",
+    "data": [
+      {
+        "text": "disable LRAPA",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "32020ddb-db8c-41bb-abf4-9bfd099a4182",
+    "data": [
+      {
+        "text": "turn off LRAPA",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "76dbc3eb-dc16-46af-968e-1d9c42d266dd",
+    "data": [
+      {
+        "text": "turn off correction",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "38f879d7-edb2-4d02-aef4-e5241e61a747",
+    "data": [
+      {
+        "text": "turn off smoke correction",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "93c6a4fd-2635-4dee-861f-057f153e1ac5",
+    "data": [
+      {
+        "text": "turn off smoke",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "ab964275-2b56-4369-8b5b-7928092c8030",
+    "data": [
+      {
+        "text": "disable smoke",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "be018e62-abbc-4ccf-89df-88e7ab21a7b0",
+    "data": [
+      {
+        "text": "disable smoke correction",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

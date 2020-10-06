@@ -1,0 +1,54 @@
+[
+  {
+    "id": "ac568c70-12ea-443c-8534-92bb518ac101",
+    "data": [
+      {
+        "text": "change location",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "b3fa9030-2ef4-40b7-ba45-47b8f9bd1708",
+    "data": [
+      {
+        "text": "moved",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "b2f75e15-2ea0-4a6c-86d7-b494f4371917",
+    "data": [
+      {
+        "text": "refresh location",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "d951f83e-b79c-4d8d-bcd3-f9dfaaae969a",
+    "data": [
+      {
+        "text": "Update location",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]

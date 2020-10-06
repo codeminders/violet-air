@@ -1,0 +1,79 @@
+[
+  {
+    "id": "4f80e70b-6cdf-4aba-b489-44378c55a69a",
+    "data": [
+      {
+        "text": "note my location",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "22ddb936-d178-4e45-9d3d-b5132a69f4e7",
+    "data": [
+      {
+        "text": "save my location",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "c0dd4d95-f198-4b15-8207-cb4d1d8dd486",
+    "data": [
+      {
+        "text": "remember my location",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "e4f9e8fb-f6df-4ccf-9eee-7d4efb5393c8",
+    "data": [
+      {
+        "text": "Don\u0027t ask location for ",
+        "userDefined": false
+      },
+      {
+        "text": "1 hour",
+        "meta": "@sys.duration",
+        "alias": "duration",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  },
+  {
+    "id": "aec0f2d1-f25e-47cb-bc3c-e03c4c4877aa",
+    "data": [
+      {
+        "text": "remember location for ",
+        "userDefined": false
+      },
+      {
+        "text": "30 min",
+        "meta": "@sys.duration",
+        "alias": "duration",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "en",
+    "updated": 0
+  }
+]
