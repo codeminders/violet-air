@@ -13,13 +13,11 @@ module.exports.filter_outliers = (array, fn) => {
 
     const m = mean(array, fn);
 
-    if(isNaN(m)) {
-        // console.log(array);
-        for (i in array) {
-            console.log(fn(i));
-            console.log(i);
-        }
-    }
+    // if(isNaN(m)) {
+    //     for (i in array) {
+    //         console.log("fn " + fn(array[i]));
+    //     }
+    // }
 
     const s = std(array, m, fn);
     const cutoff = s * 1.5; // this could be tunned
@@ -39,6 +37,8 @@ module.exports.filter_outliers = (array, fn) => {
 //     {v:63},
 //     {v:10}
 // ];
-// console.log(mean(arr, (i) => i.v));
-// console.log(std(arr, (i) => i.v));
-// console.log(filter_outliers(arr, (i) => i.v));
+
+// const m = mean(arr, (i) => i.v);
+// console.log(m);
+// console.log(std(arr, m, (x) => x.v));
+// console.log(module.exports.filter_outliers(arr, (i) => i.v));

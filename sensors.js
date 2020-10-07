@@ -126,7 +126,7 @@ const LRAPA = (x) => Math.max(0.5 * x - 0.66, 0);
 // x - raw PM2.5 value
 // h - humidity
 // only apply for PM2.5 > 65
-const EPA = (x, h) => Math.max(0.52 * x - 0.085 * h + 5.71, 0);
+const EPA = (x, h) => Math.max(0.534 * x - 0.0844 * h + 5.604, 0);
 
 //AQandU correction https://www.aqandu.org/airu_sensor#calibrationSection
 // PM2.5 (µg/m³) = 0.778 x PA + 2.65
@@ -167,22 +167,30 @@ const get_pm25_10m = (data) => {
     }
 }
 
-const sensor_pm25 = (data) => {
+const get_pm25_cf1 = (data) => {
+    return parseFloat(data.pm2_5_cf_1);
+}
+
+const get_pm25_fn = (correction) => {
+    return correction == "EPA" ? get_pm25_cf1 : get_pm25_10m;
+}
+
+const is_pm25_valid = (data, correction) => {
     if (data.AGE > MAX_AGE) {
         console.log('Skipping channel "%s" for not reporting data for %d minutes', data.Label, data.AGE);
-        return -1;
+        return false;
     }
     // sanity check, some sensors return 0.0 (instant)
     // this is hacky, need to do proper statistical
     // filtering of outliers based on distribution
     if (data.PM2_5Value > PM_25_HIGH_LIMIT || data.PM2_5Value < 0.1) {
         console.log('Skipping channel "%s" due to abnormal PM2.5 reading: %d', data.Label, data.PM2_5Value);
-        return -1;
+        return false;
     }
 
     //TODO: we may also want to check if data.Stats.v or data.Stats.pm are different from data.PM2_5Value (it is not suppose to be)
 
-    return get_pm25_10m(data); // getting 10 minutes averages
+    return true;
 }
 
 module.exports.value = async(lat, lon, correction = Correction.NONE) => {
@@ -233,15 +241,22 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
 
         // filter out all sensors with invalid JSON first
         // then filter out all sensors with invalid reading
-        let sensors_list = json.results.filter((v => {
-            return 'Stats' in v; // has 'Stats' field in its JSON 
-        })).filter((v => {
-            return sensor_pm25(v) >= 0;
+        let sensors_list = json.results;
+        
+        if (correction != "EPA") {
+            sensors_list = sensors_list.filter((v => {
+                return 'Stats' in v; // has 'Stats' field in its JSON 
+            }));
+        }
+
+        sensors_list = sensors_list.filter((v => {
+            return is_pm25_valid(v, correction);
         }));
 
+        const fn = get_pm25_fn(correction);
         // only filer out outiers if we close sensors were found
         if (res.found) {
-            sensors_list = outliers.filter_outliers(sensors_list, (i) => get_pm25_10m(i));
+            sensors_list = outliers.filter_outliers(sensors_list, (i) => fn(i));
         } else {
             // if no close sensors, we need to leave JSON results from the closest sensor
             //TODO: either sort of just leave the closest one in sensors_list
@@ -251,7 +266,7 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
         let n = 0;
         let humidity = 0; // this is an ugly hack. we reuse the last known humidity because it is only repoted on A channel, but not on B channel
         for (const sensor_json of sensors_list) {
-            const raw_pm25 = sensor_pm25(sensor_json);
+            const raw_pm25 = fn(sensor_json);
             // Look up original sensor from the sensor list
             const sensor = (sensor_json.ID in dict) ? dict[sensor_json.ID] : dict[sensor_json.ParentID];
 
@@ -301,5 +316,4 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
     //
     // console.log(await module.exports.value(37.846336, -122.26603, Correction.NONE));
     // console.log(await module.exports.value(37.416682, -122.103521, Correction.EPA));
-    // console.log(await module.exports.value(36.131075, -124.278348, Correction.EPA));
 })();
