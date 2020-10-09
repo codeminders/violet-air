@@ -1,21 +1,22 @@
-const client = require('@google/maps').createClient({
-    key: process.env.google_maps_api_key,
-    Promise: Promise
-});
+const { Client } = require("@googlemaps/google-maps-services-js");
+const client = new Client({});
 
 module.exports = async(lat, lng) => {
     console.log('Performing reverse geocoding for', { lat, lng });
 
     try {
         const result = await client.reverseGeocode({
-            latlng: { lat, lng },
-            result_type: 'locality|country'
-        }).asPromise();
-        if (!result || !result.json || !result.json.results || !result.json.results.length) {
+            params: {
+                latlng: { lat, lng },
+                result_type: 'locality|country',
+                key: process.env.google_maps_api_key
+            }
+        });
+        if (!result || !result.data || !result.data.results || !result.data.results.length) {
             console.log('Reverse geocoding returned no results for', { lat, lng });
             return null;
         }
-        const data = result.json.results[0];
+        const data = result.data.results[0];
         let locality = null;
         let country_short_name = null;
         let country_full_name = null;
