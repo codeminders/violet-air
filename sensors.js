@@ -176,6 +176,11 @@ const get_pm25_fn = (correction) => {
 }
 
 const is_pm25_valid = (data, correction) => {
+
+    if (!('pm2_5_cf_1' in data)) {
+        return false;
+    }
+
     if (data.AGE > MAX_AGE) {
         console.log('Skipping channel "%s" for not reporting data for %d minutes', data.Label, data.AGE);
         return false;
@@ -315,5 +320,4 @@ module.exports.value = async(lat, lon, correction = Correction.NONE) => {
 (async() => {
     //
     // console.log(await module.exports.value(37.846336, -122.26603, Correction.NONE));
-    // console.log(await module.exports.value(37.416682, -122.103521, Correction.EPA));
 })();
