@@ -7,7 +7,7 @@ const preferences = require('./preferences');
 const geocoder = require('./geocoder');
 
 //TODO: can we find out if user wants to use miles vs km?
-const meters_to_miles = (m) => 1609.34 * m
+const meters_to_miles = (m) => m / 1609.34
 
 module.exports.get = async(conv, options = {}) => {
     const location = conv.device.location || conv.user.storage.coords;
